@@ -10,6 +10,8 @@ logs/*.log
 # Large generated datasets
 outputs/base_runner_dataset/
 outputs/model_feature_dataset/
+outputs/model_feature_dataset_v2/
+outputs/model_feature_dataset_v2_checkpoint/*.pkl
 *.parquet
 
 # SQLite databases and sidecars
@@ -23,3 +25,4 @@ outputs/model_feature_dataset/
 .DS_Store
 .idea/
 .vscode/
+.pytest_cache/
