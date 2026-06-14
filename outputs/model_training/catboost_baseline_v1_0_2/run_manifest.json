@@ -1,0 +1,73 @@
+{
+  "version": "catboost_baseline_v1_0_2",
+  "run_started_at": "2026-06-14T17:10:02",
+  "phase1_goal": {
+    "win_roi_min": 0.9,
+    "place_roi_min": 0.9
+  },
+  "training_config_resolved_sha256": "323bdf48065e31b2b738f25306d4ed03b966aefff252e23f8b65ebb813f98483",
+  "split_definition_sha256": "c38b404bb0d85bb0323cdb63a09b8a52d64ea81c5548006ebe8030a96cd7b7bc",
+  "gpu_info": {
+    "task_type": "GPU",
+    "gpu_required": true,
+    "devices": "0",
+    "catboost_gpu_smoke": "ok"
+  },
+  "versions": {
+    "python": "3.13.11 | packaged by Anaconda, Inc. | (main, Dec 10 2025, 21:21:58) [MSC v.1929 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "catboost": "1.2.10",
+    "pandas": "3.0.0",
+    "numpy": "2.3.5",
+    "sklearn": "1.9.0",
+    "pyarrow": "24.0.0"
+  },
+  "git_commit_sha": "e4e54032079c390a8fc088f688b080dae92162ff",
+  "git_is_dirty": true,
+  "git_status_summary": "D docs/tasks/build_full_runner_dataset.md\n D docs/tasks/build_model_features_v2_1_1_task.md\n D \"docs/tasks/build_model_features_v2_1_task (1).md\"\n D docs/tasks/build_model_features_v2_task.md\n D docs/tasks/catboost_baseline_v1_0_1_task.md\n D docs/tasks/train_catboost_baseline_v1_task.md\n M src/models/catboost_resume.py\n?? config/catboost_baseline_v1_0_2.yaml\n?? docs/catboost_baseline_v1_0_2_design.md\n?? docs/catboost_baseline_v1_0_2_results.md\n?? models/catboost_baseline_v1_0_2/\n?? models/catboost_baseline_v1_0_2_smoke/\n?? outputs/model_training/catboost_baseline_v1_0_2/\n?? outputs/model_training/catboost_baseline_v1_0_2_smoke/\n?? scripts/analyze_catboost_baseline_v1_0_2.py\n?? scripts/train_catboost_baseline_v1_0_2.py\n?? src/models/catboost_atomic_output.py\n?? src/models/catboost_market_comparison.py\n?? src/models/catboost_prediction_regeneration.py\n?? tasks/\n?? tests/test_catboost_atomic_output.py\n?? tests/test_catboost_market_comparison.py\n?? tests/test_catboost_prediction_regeneration.py",
+  "models": [
+    {
+      "target": "win",
+      "feature_set": "market_free",
+      "status": "skipped_resume",
+      "model_origin": "reused_from_v1_0_1",
+      "predictions_origin": "regenerated_from_current_v2_1_1"
+    },
+    {
+      "target": "win",
+      "feature_set": "market_history",
+      "status": "skipped_resume",
+      "model_origin": "reused_from_v1_0_1",
+      "predictions_origin": "regenerated_from_current_v2_1_1"
+    },
+    {
+      "target": "win",
+      "feature_set": "market_aware",
+      "status": "skipped_resume",
+      "model_origin": "reused_from_v1_0_1",
+      "predictions_origin": "regenerated_from_current_v2_1_1"
+    },
+    {
+      "target": "place",
+      "feature_set": "market_free",
+      "status": "skipped_resume",
+      "model_origin": "reused_from_v1_0_1",
+      "predictions_origin": "regenerated_from_current_v2_1_1"
+    },
+    {
+      "target": "place",
+      "feature_set": "market_history",
+      "status": "skipped_resume",
+      "model_origin": "reused_from_v1_0_1",
+      "predictions_origin": "regenerated_from_current_v2_1_1"
+    },
+    {
+      "target": "place",
+      "feature_set": "market_aware",
+      "status": "skipped_resume",
+      "model_origin": "reused_from_v1_0_1",
+      "predictions_origin": "regenerated_from_current_v2_1_1"
+    }
+  ],
+  "run_finished_at": "2026-06-14T17:10:02"
+}

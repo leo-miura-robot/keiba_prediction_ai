@@ -21,6 +21,7 @@ FINGERPRINT_KEYS = [
     "input_dataset_fingerprint",
     "feature_set_yaml_sha256",
     "training_config_resolved_sha256",
+    "split_definition_sha256",
     "code_bundle_sha256",
 ]
 ARTIFACT_KEYS = [

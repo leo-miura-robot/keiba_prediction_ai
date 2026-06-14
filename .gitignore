@@ -19,8 +19,8 @@ outputs/model_feature_dataset_v2_1_1_checkpoint/*.pkl
 
 # Model binaries and smoke artifacts are kept locally, not in Git.
 models/**/*.cbm
-models/catboost_baseline_v1_0_1_smoke/
-outputs/model_training/catboost_baseline_v1_0_1_smoke/
+models/*_smoke/
+outputs/model_training/*_smoke/
 *.parquet
 
 # SQLite databases and sidecars

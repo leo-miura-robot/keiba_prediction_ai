@@ -1,0 +1,19 @@
+{
+  "analyzed_at": "2026-06-14T17:11:45",
+  "elapsed_seconds": 43.77999234199524,
+  "csv_hashes": {
+    "model_comparison.csv": "1091d28c5d2a2d3922e79b08969a630b536c52179a9b6f68c0bf4d5e709261ea",
+    "split_summary.csv": "6c3d43f6389d0aa181e688a474bdfc3465579154a16fa1c01f9cb39d14ed12d0",
+    "class_balance.csv": "a807a82c50e5a36c5ef7ef37b2f562aafcb8ca74ad338d947e4e1907e1145221",
+    "metrics_by_split.csv": "56491d08d95a904f28524369371f6aafe581a3ba6acd641ab05b11248eca8266",
+    "race_metrics.csv": "e213810873491a0704df9fed26c95fe0e3fa8f09fb75ebaf9de10bd38b5a0862",
+    "race_probability_sum_diagnostics.csv": "60aea1e039ac2df6c94c7479b7bd1d0d64012a527875fe6a8bf2b8e4adcd9ba4",
+    "calibration_bins.csv": "f0d013d5ee8bca75dbc1f7d94ace6c623d53e481cfdd5ebd052dfe99dd13fa5c",
+    "feature_importance.csv": "64c25088078652910aba6d1f61a900cd2e6ef0642bc049d5d8ee57f4205b5e98",
+    "shap_importance.csv": "32b47b049ae78b6d926ce01683a450f0fa6f1778091e7417dac1b8da075db801",
+    "market_comparison_complete_races.csv": "55c070477a4d5d8d3cab52919fd92e18d0a5587d886bfcca10a877ce20ffc140",
+    "market_comparison_complete_race_summary.csv": "79217497fac053e837d774cecd01d112178864abcec424e88df8dec4e0f00f3a",
+    "market_comparison_excluded_races.csv": "dbbf6b36b21e9602638bcd2e6103d725773cab190ce9587be530c5b9923b8506",
+    "market_comparison_exclusion_summary.csv": "e99c6df71214a16c84a1580cb9a807a20dc5cef72081d315ebda2c2a8356642f"
+  }
+}

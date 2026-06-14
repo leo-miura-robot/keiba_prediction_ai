@@ -1,0 +1,185 @@
+{
+  "target": "win",
+  "feature_set": "market_history",
+  "model_name": "catboost_win_market_history_v1_0_2",
+  "params": {
+    "iterations": 3000,
+    "learning_rate": 0.05,
+    "depth": 8,
+    "l2_leaf_reg": 5.0,
+    "random_strength": 1.0,
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1.0,
+    "loss_function": "Logloss",
+    "eval_metric": "Logloss",
+    "od_type": "Iter",
+    "od_wait": 200,
+    "random_seed": 42,
+    "task_type": "GPU",
+    "devices": "0",
+    "allow_writing_files": false,
+    "verbose": 100
+  },
+  "train_rows": 383401,
+  "validation_rows": 46752,
+  "test_rows": 47497,
+  "latest_holdout_rows": 21276,
+  "model_path": "models\\catboost_baseline_v1_0_2\\win\\market_history\\model.cbm",
+  "prediction_path": "outputs\\model_training\\catboost_baseline_v1_0_2\\predictions\\win_market_history.parquet",
+  "predictions_origin": "regenerated_from_current_v2_1_1",
+  "phase1_goal": {
+    "win_roi_min": 0.9,
+    "place_roi_min": 0.9
+  },
+  "model_origin": "reused_from_v1_0_1",
+  "source_model_path": "models\\catboost_baseline_v1_0_1\\win\\market_history\\model.cbm",
+  "source_manifest_path": "outputs\\model_training\\catboost_baseline_v1_0_1\\run_manifest.json",
+  "full_prediction_comparison": {
+    "compared_rows": 498926,
+    "missing_in_old": 0,
+    "missing_in_new": 0,
+    "max_abs_diff": 0.0,
+    "mean_abs_diff": 0.0,
+    "p99_abs_diff": 0.0,
+    "mismatch_count": 0,
+    "tolerance": 1e-10
+  },
+  "model_reload_prediction_match": true,
+  "metrics_by_split": [
+    {
+      "rows": 383401,
+      "positive": 27682,
+      "negative": 355719,
+      "positive_rate": 0.07220116796774134,
+      "pred_probability_mean": 0.07093836887697351,
+      "logloss": 0.2088705011836003,
+      "brier": 0.05744325050223235,
+      "roc_auc": 0.8177716237642583,
+      "pr_auc": 0.35533628652179927,
+      "auc_reason": "",
+      "data_split": "train",
+      "target": "win",
+      "feature_set": "market_history"
+    },
+    {
+      "rows": 46752,
+      "positive": 3460,
+      "negative": 43292,
+      "positive_rate": 0.07400752908966461,
+      "pred_probability_mean": 0.07016727562536547,
+      "logloss": 0.2241888466662181,
+      "brier": 0.06201764517459984,
+      "roc_auc": 0.7896089480281504,
+      "pr_auc": 0.24493906715148023,
+      "auc_reason": "",
+      "data_split": "validation",
+      "target": "win",
+      "feature_set": "market_history"
+    },
+    {
+      "rows": 47497,
+      "positive": 3461,
+      "negative": 44036,
+      "positive_rate": 0.072867760069057,
+      "pred_probability_mean": 0.06703414524948134,
+      "logloss": 0.22392482316231424,
+      "brier": 0.06171321592232334,
+      "roc_auc": 0.7845192209499783,
+      "pr_auc": 0.22732550698357962,
+      "auc_reason": "",
+      "data_split": "test",
+      "target": "win",
+      "feature_set": "market_history"
+    },
+    {
+      "rows": 21276,
+      "positive": 1507,
+      "negative": 19769,
+      "positive_rate": 0.0708309832675315,
+      "pred_probability_mean": 0.06521761268134323,
+      "logloss": 0.21824620828204255,
+      "brier": 0.060223590452210714,
+      "roc_auc": 0.7920575547373089,
+      "pr_auc": 0.22187175727352867,
+      "auc_reason": "",
+      "data_split": "latest_holdout",
+      "target": "win",
+      "feature_set": "market_history"
+    }
+  ],
+  "race_metrics": [
+    {
+      "data_split": "validation",
+      "target": "win",
+      "race_count": 3454,
+      "top1_winner_accuracy": 0.2964678633468442,
+      "top3_contains_winner_rate": 0.6071221771858715,
+      "tie_max_probability_races": 0,
+      "feature_set": "market_history"
+    },
+    {
+      "data_split": "test",
+      "target": "win",
+      "race_count": 3455,
+      "top1_winner_accuracy": 0.2795947901591896,
+      "top3_contains_winner_rate": 0.5918958031837916,
+      "tie_max_probability_races": 0,
+      "feature_set": "market_history"
+    },
+    {
+      "data_split": "latest_holdout",
+      "target": "win",
+      "race_count": 1506,
+      "top1_winner_accuracy": 0.26095617529880477,
+      "top3_contains_winner_rate": 0.5922974767596282,
+      "tie_max_probability_races": 0,
+      "feature_set": "market_history"
+    }
+  ],
+  "probability_sum_diagnostics": [
+    {
+      "data_split": "train",
+      "race_count": 27639,
+      "mean": 0.9840385529795043,
+      "median": 0.9628119477357758,
+      "std": 0.2779946054875519,
+      "min": 0.1520952834144687,
+      "max": 2.3760616390615574,
+      "target": "win",
+      "feature_set": "market_history"
+    },
+    {
+      "data_split": "validation",
+      "race_count": 3454,
+      "mean": 0.9497569397907025,
+      "median": 0.9216286646595057,
+      "std": 0.2785653261077657,
+      "min": 0.2491643178584486,
+      "max": 2.4595862437622067,
+      "target": "win",
+      "feature_set": "market_history"
+    },
+    {
+      "data_split": "test",
+      "race_count": 3455,
+      "mean": 0.9215400280505399,
+      "median": 0.8994798595814648,
+      "std": 0.2746061016084712,
+      "min": 0.2093281948288547,
+      "max": 2.310063616721838,
+      "target": "win",
+      "feature_set": "market_history"
+    },
+    {
+      "data_split": "latest_holdout",
+      "race_count": 1506,
+      "mean": 0.921361173577861,
+      "median": 0.8950531497374461,
+      "std": 0.2705511765544699,
+      "min": 0.26261912642553226,
+      "max": 1.9819539549086123,
+      "target": "win",
+      "feature_set": "market_history"
+    }
+  ]
+}

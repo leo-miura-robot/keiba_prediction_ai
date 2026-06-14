@@ -1,0 +1,5 @@
+data_split,rows,races,entry_ids
+latest_holdout,22500,1584,22500
+test,48058,3468,48058
+train,388111,27761,388111
+validation,47212,3456,47212

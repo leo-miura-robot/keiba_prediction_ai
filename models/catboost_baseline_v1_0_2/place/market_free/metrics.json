@@ -1,0 +1,185 @@
+{
+  "target": "place",
+  "feature_set": "market_free",
+  "model_name": "catboost_place_market_free_v1_0_2",
+  "params": {
+    "iterations": 3000,
+    "learning_rate": 0.05,
+    "depth": 8,
+    "l2_leaf_reg": 5.0,
+    "random_strength": 1.0,
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1.0,
+    "loss_function": "Logloss",
+    "eval_metric": "Logloss",
+    "od_type": "Iter",
+    "od_wait": 200,
+    "random_seed": 42,
+    "task_type": "GPU",
+    "devices": "0",
+    "allow_writing_files": false,
+    "verbose": 100
+  },
+  "train_rows": 383401,
+  "validation_rows": 46752,
+  "test_rows": 47497,
+  "latest_holdout_rows": 21276,
+  "model_path": "models\\catboost_baseline_v1_0_2\\place\\market_free\\model.cbm",
+  "prediction_path": "outputs\\model_training\\catboost_baseline_v1_0_2\\predictions\\place_market_free.parquet",
+  "predictions_origin": "regenerated_from_current_v2_1_1",
+  "phase1_goal": {
+    "win_roi_min": 0.9,
+    "place_roi_min": 0.9
+  },
+  "model_origin": "reused_from_v1_0_1",
+  "source_model_path": "models\\catboost_baseline_v1_0_1\\place\\market_free\\model.cbm",
+  "source_manifest_path": "outputs\\model_training\\catboost_baseline_v1_0_1\\run_manifest.json",
+  "full_prediction_comparison": {
+    "compared_rows": 498926,
+    "missing_in_old": 0,
+    "missing_in_new": 0,
+    "max_abs_diff": 0.0,
+    "mean_abs_diff": 0.0,
+    "p99_abs_diff": 0.0,
+    "mismatch_count": 0,
+    "tolerance": 1e-10
+  },
+  "model_reload_prediction_match": true,
+  "metrics_by_split": [
+    {
+      "rows": 383401,
+      "positive": 82522,
+      "negative": 300879,
+      "positive_rate": 0.2152367886364407,
+      "pred_probability_mean": 0.2153047629318225,
+      "logloss": 0.4191159097786975,
+      "brier": 0.13381241113785325,
+      "roc_auc": 0.797682385828575,
+      "pr_auc": 0.5416231997327352,
+      "auc_reason": "",
+      "data_split": "train",
+      "target": "place",
+      "feature_set": "market_free"
+    },
+    {
+      "rows": 46752,
+      "positive": 10274,
+      "negative": 36478,
+      "positive_rate": 0.21975530458590006,
+      "pred_probability_mean": 0.209091773464219,
+      "logloss": 0.4394953072794958,
+      "brier": 0.14177948806151805,
+      "roc_auc": 0.7758351430148329,
+      "pr_auc": 0.4965263098211621,
+      "auc_reason": "",
+      "data_split": "validation",
+      "target": "place",
+      "feature_set": "market_free"
+    },
+    {
+      "rows": 47497,
+      "positive": 10276,
+      "negative": 37221,
+      "positive_rate": 0.21635050634776934,
+      "pred_probability_mean": 0.2004325071264812,
+      "logloss": 0.4396906105196398,
+      "brier": 0.14156350207751237,
+      "roc_auc": 0.7711204630911227,
+      "pr_auc": 0.4845894556728748,
+      "auc_reason": "",
+      "data_split": "test",
+      "target": "place",
+      "feature_set": "market_free"
+    },
+    {
+      "rows": 21276,
+      "positive": 4500,
+      "negative": 16776,
+      "positive_rate": 0.21150592216582065,
+      "pred_probability_mean": 0.19544773303612337,
+      "logloss": 0.422433244257587,
+      "brier": 0.1358465809768831,
+      "roc_auc": 0.790756133100196,
+      "pr_auc": 0.5011809379897216,
+      "auc_reason": "",
+      "data_split": "latest_holdout",
+      "target": "place",
+      "feature_set": "market_free"
+    }
+  ],
+  "race_metrics": [
+    {
+      "data_split": "validation",
+      "target": "place",
+      "race_count": 3454,
+      "precision_at_k": 0.4940648523451071,
+      "recall_at_k": 0.4928343949044586,
+      "hit_race_rate": 0.9038795599305154,
+      "feature_set": "market_free"
+    },
+    {
+      "data_split": "test",
+      "target": "place",
+      "race_count": 3455,
+      "precision_at_k": 0.4835504100337674,
+      "recall_at_k": 0.48260974433188614,
+      "hit_race_rate": 0.8975397973950796,
+      "feature_set": "market_free"
+    },
+    {
+      "data_split": "latest_holdout",
+      "target": "place",
+      "race_count": 1506,
+      "precision_at_k": 0.5048694112439132,
+      "recall_at_k": 0.5043160690571049,
+      "hit_race_rate": 0.9143426294820717,
+      "feature_set": "market_free"
+    }
+  ],
+  "probability_sum_diagnostics": [
+    {
+      "data_split": "train",
+      "race_count": 27639,
+      "mean": 2.9866515218648892,
+      "median": 2.9696034475752193,
+      "std": 0.6011474984794094,
+      "min": 0.72076075547558,
+      "max": 6.0781577225318415,
+      "target": "place",
+      "feature_set": "market_free"
+    },
+    {
+      "data_split": "validation",
+      "race_count": 3454,
+      "mean": 2.8301848850605578,
+      "median": 2.811358449153099,
+      "std": 0.5942479086382848,
+      "min": 0.8674753042904714,
+      "max": 5.068586270804323,
+      "target": "place",
+      "feature_set": "market_free"
+    },
+    {
+      "data_split": "test",
+      "race_count": 3455,
+      "mean": 2.7554103591856665,
+      "median": 2.7428856511534496,
+      "std": 0.5981764300148407,
+      "min": 0.6446935345278537,
+      "max": 5.371414265537057,
+      "target": "place",
+      "feature_set": "market_free"
+    },
+    {
+      "data_split": "latest_holdout",
+      "race_count": 1506,
+      "mean": 2.761185901777264,
+      "median": 2.733815866512204,
+      "std": 0.5965331087722167,
+      "min": 1.1440535780371404,
+      "max": 4.8486309033626815,
+      "target": "place",
+      "feature_set": "market_free"
+    }
+  ]
+}

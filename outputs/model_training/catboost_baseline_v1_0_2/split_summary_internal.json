@@ -1,0 +1,28 @@
+{
+  "rows": [
+    {
+      "data_split": "train",
+      "rows": 388111,
+      "races": 27761,
+      "entry_ids": 388111
+    },
+    {
+      "data_split": "validation",
+      "rows": 47212,
+      "races": 3456,
+      "entry_ids": 47212
+    },
+    {
+      "data_split": "test",
+      "rows": 48058,
+      "races": 3468,
+      "entry_ids": 48058
+    },
+    {
+      "data_split": "latest_holdout",
+      "rows": 22500,
+      "races": 1584,
+      "entry_ids": 22500
+    }
+  ]
+}

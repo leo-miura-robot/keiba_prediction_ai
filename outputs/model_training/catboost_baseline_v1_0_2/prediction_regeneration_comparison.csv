@@ -1,0 +1,7 @@
+target,feature_set,source,compared_rows,missing_in_old,missing_in_new,max_abs_diff,mean_abs_diff,p99_abs_diff,mismatch_count,tolerance
+win,market_free,v1_0_1,498926,0,0,0.0,0.0,0.0,0,1e-10
+win,market_history,v1_0_1,498926,0,0,0.0,0.0,0.0,0,1e-10
+win,market_aware,v1_0_1,498926,0,0,0.0,0.0,0.0,0,1e-10
+place,market_free,v1_0_1,498926,0,0,0.0,0.0,0.0,0,1e-10
+place,market_history,v1_0_1,498926,0,0,0.0,0.0,0.0,0,1e-10
+place,market_aware,v1_0_1,498926,0,0,0.0,0.0,0.0,0,1e-10

@@ -1,0 +1,7 @@
+target,feature_set,model_origin,validation_logloss,test_logloss,latest_holdout_logloss
+place,market_aware,reused_from_v1_0_1,0.430704887448,0.431266228973,0.413159586098
+place,market_free,reused_from_v1_0_1,0.439495307279,0.43969061052,0.422433244258
+place,market_history,reused_from_v1_0_1,0.437936255239,0.439333684326,0.421780208738
+win,market_aware,reused_from_v1_0_1,0.220200252307,0.220155260744,0.214272226621
+win,market_free,reused_from_v1_0_1,0.224930664446,0.224388612513,0.218922992579
+win,market_history,reused_from_v1_0_1,0.224188846666,0.223924823162,0.218246208282
