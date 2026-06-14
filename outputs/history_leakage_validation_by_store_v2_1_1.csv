@@ -1,0 +1,11 @@
+﻿store_name,validation_rows,ok_past_reference_count,no_history_count,same_race_reference_count,same_day_reference_count,future_reference_count
+horse,505881,449264,56617,0,0,0
+jockey,505881,504572,1309,0,0,0
+trainer,505881,505159,722,0,0,0
+horse_jockey,505881,238831,267050,0,0,0
+jockey_jyo,505881,497470,8411,0,0,0
+jockey_dist_band,505881,502176,3705,0,0,0
+horse_jyo,505881,295394,210487,0,0,0
+horse_surface,505881,416806,89075,0,0,0
+horse_dist_band,505881,339631,166250,0,0,0
+horse_baba,505881,449264,56617,0,0,0

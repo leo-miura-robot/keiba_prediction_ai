@@ -62,6 +62,7 @@ python scripts\build_model_features.py --years 2016,2017 --force
 - V1: initial model feature dataset.
 - V2: Phase 1 pre-day history dataset. Same-day results are not used as history.
 - V2.1: V2 plus corrected `history_cutoff_date`, measured leakage audit, strict resume validation, and three feature-set families.
+- V2.1.1: V2.1 plus stricter resume safety, dedicated feature-set YAML, contiguous-year validation, state/output validation, and code bundle hash validation.
 
 Phase 1 does not use time-series odds data. Model training, backtesting, Optuna, calibration, and betting optimization have not started.
 
@@ -84,6 +85,20 @@ Feature sets:
 - `market_free`: no current or historical market features.
 - `market_history`: historical market features only.
 - `market_aware`: `market_history` plus current race normalized market columns and availability flags.
+
+V2.1.1 uses a dedicated config file:
+
+```text
+config/feature_sets_v2_1_1.yaml
+```
+
+Build V2.1.1:
+
+```powershell
+python scripts\build_model_features_v2_1_1.py --resume --strict-resume
+```
+
+V2.1.1 resume does not auto-regenerate on mismatch. It stops with exit code 2 and reports the rebuild command.
 
 Resume safety:
 
