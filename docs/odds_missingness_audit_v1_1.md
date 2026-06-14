@@ -54,6 +54,30 @@ Race-count consistency output contains 36,269 races. Count anomaly flag is set f
 
 The V1.1 external import scan excludes `tasks/`, `tests/`, `docs/`, `outputs/`, `src/audit/`, and `scripts/audit_*`. It found no actual external O1 import/upsert code in this repository. Empty-record overwrite remains possible externally but is not confirmed here.
 
+## Source Tool Follow-Up
+
+The DB was later identified as being built with `miyamamoto/jrvltsql` quickstart:
+
+- Documentation: `https://miyamamoto.github.io/jrvltsql/`
+- Repository: `https://github.com/miyamamoto/jrvltsql`
+
+Relevant findings from the external source tool:
+
+- `quickstart.bat` runs `scripts/quickstart.py` and creates SQLite `data\keiba.db`.
+- The documented normal-data path stores `NL_RA`, `NL_SE`, `NL_HR`, and `NL_O1`-`NL_O6`.
+- `NL_O1`-`NL_O6` are documented as final odds, not investment-decision-time odds.
+- Official long-retention time-series odds are stored separately in `TS_O1` and `TS_O2`.
+- `TS_O1` contains single-win/place/frame odds time-series and keeps `HassoTime` plus `CollectedAt`.
+- In jrvltsql schema, `NL_O1` has primary key `(Year, MonthDay, JyoCD, Kaiji, Nichiji, RaceNum, Umaban)`.
+- In jrvltsql schema, `TS_O1` has primary key `(Year, MonthDay, JyoCD, Kaiji, Nichiji, RaceNum, Umaban, Kumi, HassoTime)` and also has `CollectedAt`.
+- The importer uses `INSERT OR REPLACE` for batch insertion. This confirms an upsert/replace write path exists in the source tool, but it still does not prove that valid odds were overwritten by empty odds in this DB without raw fetch history or logs.
+
+This strengthens the distinction between:
+
+- historical final-market comparison: `NL_O1` or `SE.Odds` may be usable after missingness handling;
+- model input at prediction time: `NL_O1` should not be treated as live pre-race odds;
+- live or cutoff-time odds modeling: prefer `TS_O1` where available, with an explicit cutoff using `HassoTime` / `CollectedAt`.
+
 ## Official Specs
 
 JRA-VAN official DataLab specification pages/files were found, but this audit could not verify detailed `TanFlag`, `FukuFlag`, or `DataKubun` value meanings from accessible HTML. The official JV-Data workbook/PDF/manual should be checked directly before assigning semantic labels to code values.
@@ -67,11 +91,13 @@ JRA-VAN official DataLab specification pages/files were found, but this audit co
 - Join key mismatch: disproved as main cause
 - Cancellation/exclusion: disproved
 - Type conversion/scale problem: disproved
-- External import overwrite: possible, not confirmed
+- External import overwrite: possible, not confirmed. jrvltsql has an `INSERT OR REPLACE` path, but overwrite loss is not proven without raw fetch records/logs.
 
 ## Recommended Fix Direction
 
-Primary fix direction is to inspect/fix external O1 acquisition and re-acquire the correct O1 state/snapshot. `SE.Odds` may be considered only for historical final-market comparison. `COALESCE(O1, SE)` is not recommended before timing semantics are confirmed.
+Primary fix direction is to inspect jrvltsql quickstart options/logs and decide whether the DB needs `quickstart_timeseries.bat --db sqlite --from <FROM> --to <TO>` or `quickstart.bat --yes --include-timeseries` for `TS_O1`/`TS_O2` coverage. Because JRA-VAN time-series retention is documented as about one year, this can only backfill recent years from the service; older years likely require already-collected local data.
+
+`SE.Odds` may be considered only for historical final-market comparison. `COALESCE(O1, SE)` is not recommended before timing semantics are confirmed.
 
 No fallback, COALESCE, DB re-import, feature regeneration, model retraining, ROI, or EV calculation was performed.
 

@@ -1,0 +1,18 @@
+input:
+  base_dataset_dir: "outputs/base_runner_dataset_o1_fixed"
+  source_db_path: "D:/keiba/new_jra_2016-2026_fixed/keiba.db"
+outputs:
+  dataset_dir: "outputs/model_feature_dataset_v2_1_2"
+  checkpoint_dir: "outputs/model_feature_dataset_v2_1_2_checkpoint"
+  log: "logs/build_model_features_v2_1_2.log"
+feature_sets:
+  yaml: "config/feature_sets_v2_1_2.yaml"
+comparison:
+  old_v2_1_1_dir: "outputs/model_feature_dataset_v2_1_1"
+splits:
+  train: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+  validation: [2024]
+  test: [2025]
+  latest_holdout: [2026]
+notes:
+  market_aware: "Uses final NL_O1 odds for ideal-condition modeling, not pre-race live operation."

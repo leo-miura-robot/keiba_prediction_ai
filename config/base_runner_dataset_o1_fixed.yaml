@@ -1,0 +1,20 @@
+database:
+  path: "D:/keiba/new_jra_2016-2026_fixed/keiba.db"
+  mode: "read_only"
+comparison_database:
+  old_path: "D:/keiba/new_jra_2016-2026/keiba.db"
+outputs:
+  dataset_dir: "outputs/base_runner_dataset_o1_fixed"
+  output_root: "outputs/base_runner_dataset_o1_fixed"
+  checkpoint: "outputs/base_runner_dataset_o1_fixed/checkpoint.json"
+  log: "logs/build_full_runner_dataset_o1_fixed.log"
+old_outputs:
+  base_dataset_dir: "outputs/base_runner_dataset"
+years:
+  start: 2016
+  end: 2026
+splits:
+  train: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+  validation: [2024]
+  test: [2025]
+  latest_holdout: [2026]
