@@ -1,0 +1,18 @@
+{
+  "allow_writing_files": false,
+  "bagging_temperature": 1.0,
+  "bootstrap_type": "Bayesian",
+  "depth": 8,
+  "devices": "0",
+  "eval_metric": "Logloss",
+  "iterations": 3000,
+  "l2_leaf_reg": 5.0,
+  "learning_rate": 0.05,
+  "loss_function": "Logloss",
+  "od_type": "Iter",
+  "od_wait": 200,
+  "random_seed": 42,
+  "random_strength": 1.0,
+  "task_type": "GPU",
+  "verbose": 100
+}
