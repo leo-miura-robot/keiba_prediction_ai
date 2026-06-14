@@ -1,0 +1,5 @@
+﻿usage,assessment,evidence,condition
+past_market_comparison,conditionally_safe,SE.Odds has high coverage and exactly matches O1.TanOdds where both valid; timing still must be documented as final odds.,"Use only as historical final-market benchmark, not live snapshot."
+backtest_final_odds_reference,conditionally_safe,Useful as final odds reference; payout tables remain the source of realized return.,Do not replace payout-based ROI with odds-implied return.
+market_aware_training_input,unknown_to_unsafe,SE.Odds availability before prediction time is not proven; could be result-side/final update.,Do not use until timestamp availability is proven and reproducible.
+real_time_inference_input,unsafe,No live/pre-deadline acquisition path is proven for SE.Odds.,Use live odds snapshots such as appropriate O1/TS source instead.

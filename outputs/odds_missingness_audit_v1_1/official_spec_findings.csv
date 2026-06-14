@@ -1,0 +1,4 @@
+﻿source_name,url,finding,confidence,checked_at
+JRA-VAN DataLab detailed specs page,https://jra-van.jp/dlb/ddata.html,"Official DataLab detailed specification page exists, but this audit could not directly verify TanFlag/FukuFlag value meanings from accessible HTML.",official_page_found_value_meaning_unconfirmed,2026-06-14
+JRA-VAN JV-Data 4.9.0 change history XLSX,https://jra-van.jp/dlb/sdv/sdk/JV-Data490.xlsx,Official search result references JV-Data specification/change history and odds record notes. Detailed field semantics require the specification workbook/PDF/manual confirmation.,official_file_found_value_meaning_unconfirmed,2026-06-14
+JRA-VAN developer community,https://developer.jra-van.jp/,Official community/support recommends DataLab validation tools and sample software for acquisition issues. This supports verifying external ingestion settings outside this repository.,support_guidance_found,2026-06-14

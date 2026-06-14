@@ -1,0 +1,5 @@
+﻿hypothesis,supporting_rows,counterexample_rows,assessment
+H1_pre_or_same_day_initial_records_are_null,840,237,mixed
+H2_only_post_race_records_have_odds,142688,237,disproved_if_same_day_valid_exists
+H3_SE_odds_filled_after_result_update,,,unknown_from_O1_timing_only
+H4_O1_only_some_snapshots_are_saved,1077,,possible

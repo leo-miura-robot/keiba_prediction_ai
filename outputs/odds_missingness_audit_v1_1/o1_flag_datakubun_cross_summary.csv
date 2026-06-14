@@ -1,0 +1,6 @@
+﻿DataKubun,TanFlag,FukuFlag,tan_odds_status,fuku_odds_status,rows,race_count,valid_tan_rows,null_tan_rows,valid_fuku_rows,null_fuku_rows,tan_valid_rate,fuku_valid_rate,complete_race_count
+5,7,7,null,null,360137,26445,0,360137,0,360137,0.0,0.0,
+5,7,7,valid,valid,142925,10446,142925,0,142925,0,1.0,1.0,
+missing_row,missing_row,missing_row,missing_row,missing_row,2004,157,0,0,0,0,0.0,0.0,
+9,7,7,null,null,783,56,0,783,0,783,0.0,0.0,
+9,3,3,null,null,32,2,0,32,0,32,0.0,0.0,
