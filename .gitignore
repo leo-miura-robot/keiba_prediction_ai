@@ -12,6 +12,8 @@ outputs/base_runner_dataset/
 outputs/model_feature_dataset/
 outputs/model_feature_dataset_v2/
 outputs/model_feature_dataset_v2_checkpoint/*.pkl
+outputs/model_feature_dataset_v2_1/
+outputs/model_feature_dataset_v2_1_checkpoint/*.pkl
 *.parquet
 
 # SQLite databases and sidecars

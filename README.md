@@ -56,3 +56,37 @@ python scripts\build_model_features.py --years 2016,2017 --force
 - モデル特徴量データセット作成済み
 - モデル学習は未実施
 - バックテストは未実施
+
+## Dataset Versions
+
+- V1: initial model feature dataset.
+- V2: Phase 1 pre-day history dataset. Same-day results are not used as history.
+- V2.1: V2 plus corrected `history_cutoff_date`, measured leakage audit, strict resume validation, and three feature-set families.
+
+Phase 1 does not use time-series odds data. Model training, backtesting, Optuna, calibration, and betting optimization have not started.
+
+## V2.1
+
+Build V2.1:
+
+```powershell
+python scripts\build_model_features_v2_1.py --resume --strict-resume
+```
+
+Rebuild from a specific year:
+
+```powershell
+python scripts\build_model_features_v2_1.py --resume --rebuild-from-year 2020
+```
+
+Feature sets:
+
+- `market_free`: no current or historical market features.
+- `market_history`: historical market features only.
+- `market_aware`: `market_history` plus current race normalized market columns and availability flags.
+
+Resume safety:
+
+- `--resume` continues from the latest valid yearly checkpoint.
+- `--strict-resume` stops if input Parquet, feature-set hash, script version, or state version changed.
+- `--rebuild-from-year YYYY` invalidates and regenerates YYYY and later.
