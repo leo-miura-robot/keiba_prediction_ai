@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Logs
+logs/*.log
+
+# Large generated datasets
+outputs/base_runner_dataset/
+outputs/model_feature_dataset/
+*.parquet
+
+# SQLite databases and sidecars
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Local/editor files
+.DS_Store
+.idea/
+.vscode/

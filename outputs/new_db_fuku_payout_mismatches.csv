@@ -1,0 +1,4 @@
+﻿validation,race_id,Year,MonthDay,JyoCD,Kaiji,Nichiji,RaceNum,Umaban,Bamei,NyusenJyuni,KakuteiJyuni,IJyoCD,SyussoTosu,fuku_umaban_values,notes
+KakuteiJyuni_normal_only,2020110705050104,2020,1107,05,5,1,4,10,ギャラクサイト,4,3,0,10,03|05|06,KakuteiJyuni eligible horse not found in FukuUmaban1-5
+NyusenJyuni_all,2017070903020405,2017,709,03,2,4,5,8,ハクサンフエロ,3,4,7,14,10|11|14,NyusenJyuni eligible horse not found in FukuUmaban1-5
+NyusenJyuni_all,2020032907010811,2020,329,07,1,8,11,11,クリノガウディー,1,4,7,18,16|08|03,NyusenJyuni eligible horse not found in FukuUmaban1-5

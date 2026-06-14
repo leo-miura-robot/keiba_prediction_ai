@@ -1,0 +1,83 @@
+{
+  "years": {
+    "2016": {
+      "status": "complete",
+      "rows": 50076,
+      "output": "outputs\\model_feature_dataset\\year=2016\\data.parquet",
+      "elapsed_sec": 0.036,
+      "completed_at": "2026-06-14T02:56:20"
+    },
+    "2017": {
+      "status": "complete",
+      "rows": 49838,
+      "output": "outputs\\model_feature_dataset\\year=2017\\data.parquet",
+      "elapsed_sec": 0.029,
+      "completed_at": "2026-06-14T02:56:20"
+    },
+    "2018": {
+      "status": "complete",
+      "rows": 49124,
+      "output": "outputs\\model_feature_dataset\\year=2018\\data.parquet",
+      "elapsed_sec": 0.08,
+      "completed_at": "2026-06-14T02:57:39"
+    },
+    "2019": {
+      "status": "complete",
+      "rows": 47933,
+      "output": "outputs\\model_feature_dataset\\year=2019\\data.parquet",
+      "elapsed_sec": 0.023,
+      "completed_at": "2026-06-14T02:57:39"
+    },
+    "2020": {
+      "status": "complete",
+      "rows": 48427,
+      "output": "outputs\\model_feature_dataset\\year=2020\\data.parquet",
+      "elapsed_sec": 0.027,
+      "completed_at": "2026-06-14T02:57:39"
+    },
+    "2021": {
+      "status": "complete",
+      "rows": 47821,
+      "output": "outputs\\model_feature_dataset\\year=2021\\data.parquet",
+      "elapsed_sec": 0.023,
+      "completed_at": "2026-06-14T02:57:39"
+    },
+    "2022": {
+      "status": "complete",
+      "rows": 47220,
+      "output": "outputs\\model_feature_dataset\\year=2022\\data.parquet",
+      "elapsed_sec": 0.023,
+      "completed_at": "2026-06-14T02:57:40"
+    },
+    "2023": {
+      "status": "complete",
+      "rows": 47672,
+      "output": "outputs\\model_feature_dataset\\year=2023\\data.parquet",
+      "elapsed_sec": 0.022,
+      "completed_at": "2026-06-14T02:57:40"
+    },
+    "2024": {
+      "status": "complete",
+      "rows": 47212,
+      "output": "outputs\\model_feature_dataset\\year=2024\\data.parquet",
+      "elapsed_sec": 0.022,
+      "completed_at": "2026-06-14T02:57:40"
+    },
+    "2025": {
+      "status": "complete",
+      "rows": 48058,
+      "output": "outputs\\model_feature_dataset\\year=2025\\data.parquet",
+      "elapsed_sec": 0.024,
+      "completed_at": "2026-06-14T02:57:40"
+    },
+    "2026": {
+      "status": "complete",
+      "rows": 22500,
+      "output": "outputs\\model_feature_dataset\\year=2026\\data.parquet",
+      "elapsed_sec": 0.017,
+      "completed_at": "2026-06-14T02:57:40"
+    }
+  },
+  "last_started_at": "2026-06-14T02:57:13",
+  "last_completed_at": "2026-06-14T02:57:40"
+}

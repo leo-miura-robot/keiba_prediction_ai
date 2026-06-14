@@ -1,0 +1,16 @@
+﻿race_id,Year,MonthDay,JyoCD,Kaiji,Nichiji,RaceNum,Umaban,KakuteiJyuni,source_table,source_column_umaban,source_column_pay,source_umaban_value,source_pay_value,fuku_pay,matched,notes
+2016010506010101,2016,105,06,1,1,1,12,1,NL_HR,FukuUmaban,FukuPay,12,120,120,1,matched exact FukuUmaban
+2016010506010101,2016,105,06,1,1,1,11,2,NL_HR,FukuUmaban,FukuPay,12,120,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010101,2016,105,06,1,1,1,13,3,NL_HR,FukuUmaban,FukuPay,12,120,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010102,2016,105,06,1,1,2,5,1,NL_HR,FukuUmaban,FukuPay,05,440,440,1,matched exact FukuUmaban
+2016010506010102,2016,105,06,1,1,2,15,2,NL_HR,FukuUmaban,FukuPay,05,440,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010102,2016,105,06,1,1,2,7,3,NL_HR,FukuUmaban,FukuPay,05,440,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010103,2016,105,06,1,1,3,12,1,NL_HR,FukuUmaban,FukuPay,12,200,200,1,matched exact FukuUmaban
+2016010506010103,2016,105,06,1,1,3,8,2,NL_HR,FukuUmaban,FukuPay,12,200,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010103,2016,105,06,1,1,3,13,3,NL_HR,FukuUmaban,FukuPay,12,200,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010104,2016,105,06,1,1,4,10,1,NL_HR,FukuUmaban,FukuPay,10,110,110,1,matched exact FukuUmaban
+2016010506010104,2016,105,06,1,1,4,7,2,NL_HR,FukuUmaban,FukuPay,10,110,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010104,2016,105,06,1,1,4,2,3,NL_HR,FukuUmaban,FukuPay,10,110,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010105,2016,105,06,1,1,5,2,1,NL_HR,FukuUmaban,FukuPay,02,170,170,1,matched exact FukuUmaban
+2016010506010105,2016,105,06,1,1,5,13,2,NL_HR,FukuUmaban,FukuPay,02,170,,0,not represented by sampled NL_HR FukuUmaban
+2016010506010105,2016,105,06,1,1,5,10,3,NL_HR,FukuUmaban,FukuPay,02,170,,0,not represented by sampled NL_HR FukuUmaban
