@@ -16,6 +16,7 @@ outputs/model_feature_dataset_v2_1/
 outputs/model_feature_dataset_v2_1_checkpoint/*.pkl
 outputs/model_feature_dataset_v2_1_1/
 outputs/model_feature_dataset_v2_1_1_checkpoint/*.pkl
+models/catboost_baseline_v1/**/*.cbm
 *.parquet
 
 # SQLite databases and sidecars

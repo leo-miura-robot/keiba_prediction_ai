@@ -1,3 +1,5 @@
 polars>=1.38
 pyarrow>=16
 pytest>=8
+catboost
+scikit-learn

@@ -100,6 +100,45 @@ python scripts\build_model_features_v2_1_1.py --resume --strict-resume
 
 V2.1.1 resume does not auto-regenerate on mismatch. It stops with exit code 2 and reports the rebuild command.
 
+## CatBoost Baseline V1
+
+Phase 1 CatBoost baseline uses only the V2.1.1 feature dataset:
+
+```text
+outputs/model_feature_dataset_v2_1_1/year=YYYY/data.parquet
+```
+
+Official targets:
+
+- win: `target_win_paid`
+- place: `target_place_paid`
+
+Splits:
+
+- train: 2016-2023
+- validation: 2024
+- test: 2025
+- latest_holdout: 2026
+
+Run one GPU model:
+
+```powershell
+python scripts\train_catboost_baseline.py --target win --feature-set market_free --task-type GPU
+```
+
+Run all six GPU models:
+
+```powershell
+python scripts\train_catboost_baseline.py --all --task-type GPU --resume
+```
+
+Outputs:
+
+- `models/catboost_baseline_v1/`
+- `outputs/model_training/catboost_baseline_v1/`
+
+CatBoost baseline training has been run. Backtesting, EV calculation, calibration application, and betting strategy optimization are still not implemented.
+
 Resume safety:
 
 - `--resume` continues from the latest valid yearly checkpoint.

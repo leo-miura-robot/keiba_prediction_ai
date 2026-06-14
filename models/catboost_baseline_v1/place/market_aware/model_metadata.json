@@ -1,0 +1,170 @@
+{
+  "target": "place",
+  "feature_set": "market_aware",
+  "model_name": "catboost_place_market_aware_v1",
+  "best_iteration": 866,
+  "params": {
+    "iterations": 3000,
+    "learning_rate": 0.05,
+    "depth": 8,
+    "l2_leaf_reg": 5.0,
+    "random_strength": 1.0,
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1.0,
+    "loss_function": "Logloss",
+    "eval_metric": "Logloss",
+    "od_type": "Iter",
+    "od_wait": 200,
+    "random_seed": 42,
+    "task_type": "GPU",
+    "devices": "0",
+    "allow_writing_files": false,
+    "verbose": 100
+  },
+  "train_rows": 383401,
+  "validation_rows": 46752,
+  "test_rows": 47497,
+  "latest_holdout_rows": 21276,
+  "training_seconds": 67.44477701187134,
+  "prediction_seconds": 0.5217256546020508,
+  "model_path": "models\\catboost_baseline_v1\\place\\market_aware\\model.cbm",
+  "all_missing_numeric_columns": [],
+  "metrics_by_split": [
+    {
+      "rows": 383401,
+      "positive": 82522,
+      "negative": 300879,
+      "positive_rate": 0.2152367886364407,
+      "pred_probability_mean": 0.21547356619864316,
+      "logloss": 0.40531227383286644,
+      "brier": 0.12905212645149686,
+      "roc_auc": 0.8146335069145024,
+      "pr_auc": 0.5738529933078617,
+      "auc_reason": "",
+      "data_split": "train",
+      "target": "place",
+      "feature_set": "market_aware"
+    },
+    {
+      "rows": 46752,
+      "positive": 10274,
+      "negative": 36478,
+      "positive_rate": 0.21975530458590006,
+      "pred_probability_mean": 0.2077400903370784,
+      "logloss": 0.43070488744771573,
+      "brier": 0.13884212528240053,
+      "roc_auc": 0.7881306358952913,
+      "pr_auc": 0.5152749410068012,
+      "auc_reason": "",
+      "data_split": "validation",
+      "target": "place",
+      "feature_set": "market_aware"
+    },
+    {
+      "rows": 47497,
+      "positive": 10276,
+      "negative": 37221,
+      "positive_rate": 0.21635050634776934,
+      "pred_probability_mean": 0.1984255380060601,
+      "logloss": 0.43126622897289213,
+      "brier": 0.13880684942336313,
+      "roc_auc": 0.7830878500020952,
+      "pr_auc": 0.5050352213409413,
+      "auc_reason": "",
+      "data_split": "test",
+      "target": "place",
+      "feature_set": "market_aware"
+    },
+    {
+      "rows": 21276,
+      "positive": 4500,
+      "negative": 16776,
+      "positive_rate": 0.21150592216582065,
+      "pred_probability_mean": 0.19309888344463685,
+      "logloss": 0.4131595860982866,
+      "brier": 0.1324313550345826,
+      "roc_auc": 0.8020214194881576,
+      "pr_auc": 0.5290980689359728,
+      "auc_reason": "",
+      "data_split": "latest_holdout",
+      "target": "place",
+      "feature_set": "market_aware"
+    }
+  ],
+  "race_metrics": [
+    {
+      "data_split": "validation",
+      "target": "place",
+      "race_count": 3454,
+      "precision_at_k": 0.5027986875120632,
+      "recall_at_k": 0.5016164833043814,
+      "hit_race_rate": 0.9090909090909091,
+      "feature_set": "market_aware"
+    },
+    {
+      "data_split": "test",
+      "target": "place",
+      "race_count": 3455,
+      "precision_at_k": 0.4938736131210805,
+      "recall_at_k": 0.4929329474191992,
+      "hit_race_rate": 0.9024602026049204,
+      "feature_set": "market_aware"
+    },
+    {
+      "data_split": "latest_holdout",
+      "target": "place",
+      "race_count": 1506,
+      "precision_at_k": 0.5189243027888446,
+      "recall_at_k": 0.5184262948207171,
+      "hit_race_rate": 0.9243027888446215,
+      "feature_set": "market_aware"
+    }
+  ],
+  "probability_sum_diagnostics": [
+    {
+      "data_split": "train",
+      "race_count": 27639,
+      "mean": 2.9889931167598682,
+      "median": 2.9852025865824556,
+      "std": 0.5273207871247355,
+      "min": 0.7712047260129811,
+      "max": 6.250536060856946,
+      "target": "place",
+      "feature_set": "market_aware"
+    },
+    {
+      "data_split": "validation",
+      "race_count": 3454,
+      "mean": 2.8118890282105067,
+      "median": 2.8055856037426894,
+      "std": 0.5344751924390191,
+      "min": 0.9223912218072263,
+      "max": 5.167544536305098,
+      "target": "place",
+      "feature_set": "market_aware"
+    },
+    {
+      "data_split": "test",
+      "race_count": 3455,
+      "mean": 2.727819906996769,
+      "median": 2.7252647191738077,
+      "std": 0.5398838789843449,
+      "min": 0.6953963933210567,
+      "max": 5.283052609630262,
+      "target": "place",
+      "feature_set": "market_aware"
+    },
+    {
+      "data_split": "latest_holdout",
+      "race_count": 1506,
+      "mean": 2.7280025525684555,
+      "median": 2.721678352410667,
+      "std": 0.5236427627805116,
+      "min": 1.168037485193771,
+      "max": 4.828486112357151,
+      "target": "place",
+      "feature_set": "market_aware"
+    }
+  ],
+  "model_reload_prediction_match": true
+}
