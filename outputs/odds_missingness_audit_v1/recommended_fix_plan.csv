@@ -1,0 +1,5 @@
+﻿recommended_fix,affected_files,required_rebuild_range,leakage_consideration,model_retraining_required,expected_coverage
+O1取得範囲と取込履歴を確認し、欠損原因確定後にDB再取込を検討,external ingestion / DB only,DB再取込後は base_runner_dataset 以降全期間,取得時点を明示,特徴量が変わる場合は必要,O1欠損が取得不足なら改善
+SE.Oddsを過去市場ベンチマーク用の別列として評価,future dataset design only,未適用,発走前入力には時点確認なしで使わない,未適用,単勝のみ高coverageの可能性
+"COALESCE(O1, SE)は原因確定まで禁止",none now,none,SEがレース後値ならmarket_aware入力リークの可能性,none now,未評価
+複勝オッズはO1または時系列オッズ表/元データ再取得を優先,future extraction,確定後全期間,払戻をオッズ代替にしない,特徴量追加時必要,O1再取得で改善可能

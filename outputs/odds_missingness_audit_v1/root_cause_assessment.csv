@@ -1,0 +1,9 @@
+﻿cause_candidate,certainty,evidence,counter_evidence,additional_check
+O1の値自体が未収録,confirmed,"O1 missing rows=2,004; Tan NULL=360,952; Tan invalid=0; place NULL=360,952; place invalid=0; valid_tan=142,925/505,881; valid_place=142,925/505,881",O1 joined rows with valid odds also exist,取得対象期間とJV-Link/Odds取得設定の確認
+SEではなくO1を正式列に選んだ,confirmed,build_full_runner_dataset.py maps tan_odds/fuku_odds_* from NL_O1 only; SE.Odds is retained separately,None,SE.Oddsの提供時点確認
+JOINキー不一致,possible,ENTRY_KEY join is used; duplicate and missing counts are separately output,missingが年度・取得範囲に集中する場合はjoin以外が主因,zero padding/type mismatch samples
+取消・除外に限定,disproved,missingness_by_status shows normal IJyoCD rows also affected when present,abnormal statuses may have higher/lower rates,status CSV
+DataKubun/flag依存,possible,DataKubun別CSVを出力。O1 DataKubunとMakeDateで偏り確認可能,flag列は存在しない場合がある,取込元レコード種別仕様
+取込上書き,possible,repo内取込コードは限定的。現DBに履歴がなければ上書き遷移は証明不可,有効→欠損履歴テーブル未確認,外部取込処理、元ログ、履歴テーブル
+型変換・スケール問題,disproved,SE/O1比較とvalue_encodingで単位・0/sentinelを確認。大半の欠損はO1行なし/値なしとして分類,一部変換不能文字列があればCSVに出る,odds_value_encoding_summary.csv
+取得期間不足,highly likely,完全市場比較から多数のmissing_odds_runnerが出ており、O1行なしが主要分類なら取得範囲不足の可能性が高い,取込上書きでも同様に現れる,外部取得期間・DataKubun・MakeDate監査

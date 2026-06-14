@@ -1,0 +1,8 @@
+﻿table_name,column_name,rows,null_count,empty_count,zero_count,negative_count,sentinel_count,min_value,max_value
+NL_SE,Odds,807443,0,0,305848,0,7,0.0,999.9
+NL_SE,Ninki,807443,0,0,11365,0,0,0.0,18.0
+NL_O1,TanOdds,538292,395367,0,0,0,0,1.1,939.8
+NL_O1,TanNinki,538292,395367,0,0,0,0,1.0,18.0
+NL_O1,FukuOddsLow,538292,395367,0,0,0,0,1.0,217.4
+NL_O1,FukuOddsHigh,538292,395367,0,0,0,0,1.0,631.6
+NL_O1,FukuNinki,538292,395367,0,0,0,0,1.0,18.0

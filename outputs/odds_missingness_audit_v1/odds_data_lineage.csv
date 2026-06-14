@@ -1,0 +1,10 @@
+﻿final_column,source_table,source_column,join_keys,conversion,fallback,filter,null_handling
+tan_odds,NL_O1,TanOdds,"Year,MonthDay,JyoCD,Kaiji,Nichiji,RaceNum,Umaban",SQLite/Python numeric cast; valid if >0,none in V2.1.1 base dataset,JRA JyoCD 01-10 in base builder,NULL remains missing
+tan_ninki,NL_O1,TanNinki,entry key,numeric/category as loaded,none,same,NULL remains missing
+fuku_odds_low,NL_O1,FukuOddsLow,entry key,numeric cast; valid if >0,none,same,NULL remains missing
+fuku_odds_high,NL_O1,FukuOddsHigh,entry key,numeric cast; valid if >0,none,same,NULL remains missing
+fuku_ninki,NL_O1,FukuNinki,entry key,numeric/category as loaded,none,same,NULL remains missing
+TanVote,NL_O1,TanVote,entry key,raw numeric,none,same,NULL remains missing
+FukuVote,NL_O1,FukuVote,entry key,raw numeric,none,same,NULL remains missing
+Odds,NL_SE,Odds,base row,raw final/result-side odds retained as Odds in base dataset,not used for tan_odds,same,available as separate column only
+Ninki,NL_SE,Ninki,base row,raw final/result-side popularity retained as Ninki,not used for tan_ninki,same,available as separate column only
