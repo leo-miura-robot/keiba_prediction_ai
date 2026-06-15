@@ -1,0 +1,43 @@
+version: place_market_offset_catboost_c1r0_feature_cleanup_phase3_v1
+base_c1r0_config: config/place_market_offset_catboost_c1r0_v1.yaml
+phase1_output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_v1
+phase1_model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_v1
+phase2_output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_phase2_v1
+phase2_model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_phase2_v1
+fixed300_output_root: outputs/place_market_offset_catboost_c1r0_tree_count_v1
+output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_phase3_v1
+model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_phase3_v1
+fixed_tree_count: 300
+fixed_calibration_method: isotonic
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+bootstrap:
+  n_bootstrap: 5000
+  seed: 42
+  ece_bins: 10
+clean_base:
+  name: drop_person_codes_raw_starts
+  drop_features: [KisyuCode, ChokyosiCode]
+transformed_starts:
+  model_key: C1R0_300_feature_cleanup_phase2_starts_clip_p99_log1p
+  transform: clip_p99_log1p
+  features: [trainer_past_starts, jockey_past_starts]
+additional_ablation_candidates:
+  no_meeting_admin:
+    drop_features: [KisyuCode, ChokyosiCode, Kaiji, Nichiji, RaceNum]
+  no_raw_time:
+    drop_features: [KisyuCode, ChokyosiCode, horse_last3_avg_time, horse_last5_avg_time]
+  no_raw_body_weight:
+    drop_features: [KisyuCode, ChokyosiCode, BaTaijyu]
+bootstrap_iterations_roi: 1000
+shap_sample_per_year: 1200
+random_seed: 42
+execution_constraints:
+  gpu_ram_part: 0.75
+  note: "Execution stability constraint only; not a model-selection hyperparameter."
+smoke_overrides:
+  n_bootstrap: 200
+  bootstrap_iterations_roi: 50
+  shap_sample_per_year: 100
+  train_rows_per_year: 800
+  eval_rows_per_year: 400

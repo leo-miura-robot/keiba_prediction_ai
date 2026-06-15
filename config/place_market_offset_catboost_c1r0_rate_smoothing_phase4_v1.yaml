@@ -1,0 +1,48 @@
+version: place_market_offset_catboost_c1r0_rate_smoothing_phase4_v1
+base_c1r0_config: config/place_market_offset_catboost_c1r0_v1.yaml
+phase1_output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_v1
+output_root: outputs/place_market_offset_catboost_c1r0_rate_smoothing_phase4_v1
+model_root: models/place_market_offset_catboost_c1r0_rate_smoothing_phase4_v1
+base_model_key: C1R0_fixed300_ablation_drop_person_codes
+fixed_tree_count: 300
+fixed_calibration_method: isotonic
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+
+target_groups:
+  trainer:
+    starts_feature: trainer_past_starts
+    rates:
+      - trainer_win_rate
+      - trainer_ren_rate
+      - trainer_top3_rate
+  jockey:
+    starts_feature: jockey_past_starts
+    rates:
+      - jockey_win_rate
+      - jockey_ren_rate
+      - jockey_top3_rate
+  horse_surface:
+    starts_feature: horse_surface_past_starts
+    rates:
+      - horse_surface_win_rate
+      - horse_surface_top3_rate
+
+screening_strengths: [10]
+refinement_strengths: [5, 20]
+
+bootstrap_iterations: 5000
+bootstrap_seed: 42
+ece_bins: 10
+random_seed: 42
+shap_sample_per_year: 1200
+
+execution_constraints:
+  gpu_ram_part: 0.75
+  note: "Execution stability constraint only; not a model-selection hyperparameter."
+
+smoke_overrides:
+  bootstrap_iterations: 100
+  shap_sample_per_year: 100
+  train_rows_per_year: 800
+  eval_rows_per_year: 400

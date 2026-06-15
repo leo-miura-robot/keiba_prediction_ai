@@ -1,0 +1,45 @@
+version: place_market_offset_catboost_c1r0_feature_cleanup_phase2_v1
+base_c1r0_config: config/place_market_offset_catboost_c1r0_v1.yaml
+phase1_output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_v1
+phase1_model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_v1
+fixed300_output_root: outputs/place_market_offset_catboost_c1r0_tree_count_v1
+output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_phase2_v1
+model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_phase2_v1
+fixed_tree_count: 300
+fixed_calibration_method: isotonic
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+working_base_ablation: drop_person_codes
+working_base_drop_features: [KisyuCode, ChokyosiCode]
+monthday_ablation:
+  name: no_monthday
+  drop_features: [KisyuCode, ChokyosiCode, MonthDay]
+cumulative_starts:
+  features: [trainer_past_starts, jockey_past_starts]
+  variants:
+    raw:
+      transform: raw
+      drop_features: [KisyuCode, ChokyosiCode]
+    drop:
+      transform: drop
+      drop_features: [KisyuCode, ChokyosiCode, trainer_past_starts, jockey_past_starts]
+    log1p:
+      transform: log1p
+      drop_features: [KisyuCode, ChokyosiCode]
+    clip_p99:
+      transform: clip_p99
+      drop_features: [KisyuCode, ChokyosiCode]
+    clip_p99_log1p:
+      transform: clip_p99_log1p
+      drop_features: [KisyuCode, ChokyosiCode]
+bootstrap_iterations: 1000
+shap_sample_per_year: 1200
+random_seed: 42
+execution_constraints:
+  gpu_ram_part: 0.75
+  note: "Execution stability constraint only; not a model-selection hyperparameter."
+smoke_overrides:
+  bootstrap_iterations: 50
+  shap_sample_per_year: 100
+  train_rows_per_year: 800
+  eval_rows_per_year: 400

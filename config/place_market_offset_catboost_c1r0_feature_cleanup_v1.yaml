@@ -1,0 +1,43 @@
+version: place_market_offset_catboost_c1r0_feature_cleanup_v1
+base_c1r0_config: config/place_market_offset_catboost_c1r0_v1.yaml
+base_fixed300_output_root: outputs/place_market_offset_catboost_c1r0_tree_count_v1
+base_fixed300_model_root: models/place_market_offset_catboost_c1r0_tree_count_v1
+output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_v1
+model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_v1
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+fixed_tree_count: 300
+fixed_calibration_method: isotonic
+bootstrap_iterations: 1000
+random_seed: 42
+audit:
+  high_unique_ratio_threshold: 0.02
+  high_unique_count_threshold: 100
+  year_abs_spearman_threshold: 0.30
+  psi_threshold: 0.20
+  unknown_rate_threshold: 0.02
+  shap_required_rank: 20
+execution_constraints:
+  gpu_ram_part: 0.75
+  note: "Execution stability constraint only; not a model-selection hyperparameter."
+ablation_candidates:
+  drop_person_codes:
+    description: "Remove jockey/trainer identity categorical codes."
+    drop_features: [KisyuCode, ChokyosiCode]
+  drop_global_cumulative_starts:
+    description: "Remove global cumulative jockey/trainer starts."
+    drop_features: [jockey_past_starts, trainer_past_starts]
+  drop_raw_body_weight:
+    description: "Remove current-race raw body weight."
+    drop_features: [BaTaijyu]
+  drop_unadjusted_raw_time:
+    description: "Remove unadjusted raw time aggregates."
+    drop_features: [horse_last3_avg_time, horse_last5_avg_time]
+  drop_meeting_admin:
+    description: "Remove meeting administration/schedule order fields."
+    drop_features: [Kaiji, Nichiji, RaceNum]
+smoke_overrides:
+  bootstrap_iterations: 50
+  shap_sample_per_year: 100
+  train_rows_per_year: 800
+  eval_rows_per_year: 400

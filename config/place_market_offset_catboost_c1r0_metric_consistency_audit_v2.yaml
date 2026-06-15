@@ -1,0 +1,10 @@
+version: place_market_offset_catboost_c1r0_metric_consistency_audit_v2
+phase1_output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_v1
+phase2_output_root: outputs/place_market_offset_catboost_c1r0_feature_cleanup_phase2_v1
+output_root: outputs/place_market_offset_catboost_c1r0_metric_consistency_audit_v2
+raw_model_key: C1R0_fixed300_ablation_drop_person_codes
+clip_model_key: C1R0_300_feature_cleanup_phase2_starts_clip_p99_log1p
+bootstrap:
+  n_bootstrap: 5000
+  seed: 42
+  ece_bins: 10

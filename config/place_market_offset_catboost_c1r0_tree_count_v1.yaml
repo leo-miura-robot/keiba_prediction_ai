@@ -1,0 +1,19 @@
+version: place_market_offset_catboost_c1r0_tree_count_v1
+base_c1r0_config: config/place_market_offset_catboost_c1r0_v1.yaml
+base_c1r0_output_root: outputs/place_market_offset_catboost_c1r0_v1
+base_c1r0_model_root: models/place_market_offset_catboost_c1r0_v1
+output_root: outputs/place_market_offset_catboost_c1r0_tree_count_v1
+model_root: models/place_market_offset_catboost_c1r0_tree_count_v1
+candidate_tree_counts: [250, 300, 350, 400, 450]
+ntree_end_values: [250, 300, 350, 400, 450]
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+bootstrap_iterations: 1000
+random_seed: 42
+execution_constraints:
+  gpu_ram_part: 0.75
+  note: "Execution stability constraint only; not a model-selection hyperparameter."
+smoke_overrides:
+  candidate_tree_counts: [10, 20]
+  ntree_end_values: [10, 20]
+  bootstrap_iterations: 50
