@@ -1,0 +1,15 @@
+database_validation:
+  cache_dir: outputs/db_validation_cache
+  required_tables:
+    - NL_RA
+    - NL_SE
+    - NL_O1
+    - NL_HR
+  light_hash_chunk_mib: 64
+  full_hash_chunk_mib: 32
+  require_mtime_match: true
+  require_full_sha256_in_cache: true
+  reject_wal: true
+  reject_journal: true
+  auto_full_check_on_cache_miss: false
+  immutable_read: false

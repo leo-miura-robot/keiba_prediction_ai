@@ -26,6 +26,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.features.feature_sets_v2_1_2 import load_feature_set_yaml
+from src.database.db_validation_cache import DatabaseValidationError, DEFAULT_DB_PATH, db_validation_fingerprint, validate_or_require_full
 
 
 TARGETS = ["win", "place"]
@@ -714,7 +715,7 @@ def group_roi(details: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def expected_fingerprint(cfg: dict[str, Any], params: dict[str, Any], code_hash: str) -> dict[str, Any]:
+def expected_fingerprint(cfg: dict[str, Any], params: dict[str, Any], code_hash: str, db_validation: dict[str, Any] | None = None) -> dict[str, Any]:
     return {
         "version": cfg["version"],
         "input_dataset_hash": dataset_hash(cfg),
@@ -727,6 +728,7 @@ def expected_fingerprint(cfg: dict[str, Any], params: dict[str, Any], code_hash:
         "final_train_years": cfg["final_train_years"],
         "test_year": cfg["test_year"],
         "latest_holdout_year": cfg["latest_holdout_year"],
+        "db_validation": db_validation,
     }
 
 
@@ -743,7 +745,16 @@ def should_resume(out: Path, expected: dict[str, Any], strict: bool) -> bool:
     return False
 
 
-def run(config_path: Path, smoke: bool, resume: bool, strict_resume: bool, force: bool) -> dict[str, Any]:
+def run(
+    config_path: Path,
+    smoke: bool,
+    resume: bool,
+    strict_resume: bool,
+    force: bool,
+    db_validation_config: Path | str = "config/database_validation.yaml",
+    force_integrity_check: bool = False,
+    skip_db_validation: bool = False,
+) -> dict[str, Any]:
     started = time.time()
     cfg = load_config(config_path)
     if smoke:
@@ -757,9 +768,22 @@ def run(config_path: Path, smoke: bool, resume: bool, strict_resume: bool, force
     out = Path(cfg["output_root"])
     model_root = Path(cfg["model_root"])
     params = resolve_params(cfg, smoke)
+    db_path = Path(cfg.get("source_db_path", DEFAULT_DB_PATH))
+    try:
+        db_validation = validate_or_require_full(
+            db_path,
+            db_validation_config,
+            force_integrity_check=force_integrity_check,
+            skip=skip_db_validation,
+        )
+        if not skip_db_validation:
+            db_validation = db_validation_fingerprint(db_path, db_validation_config)
+    except DatabaseValidationError as exc:
+        print(f"[final-odds] DB validation failed: {exc}", flush=True)
+        raise SystemExit(2)
     code_files = [Path(__file__), config_path, Path(cfg["feature_set_yaml"])]
     code_hash = hashlib.sha256("".join(sha256_file(p) for p in code_files if p.exists()).encode()).hexdigest()
-    fingerprint = expected_fingerprint(cfg, params, code_hash)
+    fingerprint = expected_fingerprint(cfg, params, code_hash, db_validation)
     if (resume or strict_resume) and not force and should_resume(out, fingerprint, strict_resume):
         print("[resume] existing outputs match; skipped", flush=True)
         return json.loads((out / "manifest.json").read_text(encoding="utf-8"))
@@ -919,8 +943,20 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--strict-resume", action="store_true")
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--force-integrity-check", action="store_true")
+    parser.add_argument("--skip-db-validation", action="store_true")
+    parser.add_argument("--db-validation-config", default="config/database_validation.yaml")
     args = parser.parse_args()
-    run(Path(args.config), args.smoke_test, args.resume, args.strict_resume, args.force)
+    run(
+        Path(args.config),
+        args.smoke_test,
+        args.resume,
+        args.strict_resume,
+        args.force,
+        db_validation_config=args.db_validation_config,
+        force_integrity_check=args.force_integrity_check,
+        skip_db_validation=args.skip_db_validation,
+    )
     return 0
 
 

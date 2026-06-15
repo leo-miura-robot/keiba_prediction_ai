@@ -37,6 +37,7 @@ from src.features.history_builder_v2_1_2 import (
     new_state,
     save_state,
 )
+from src.database.db_validation_cache import DatabaseValidationError, db_validation_fingerprint, validate_or_require_full
 from src.features.target_builder import add_target_columns
 
 
@@ -611,6 +612,9 @@ def main() -> int:
     parser.add_argument("--strict-resume", action="store_true")
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--rebuild-from-year", type=int)
+    parser.add_argument("--force-integrity-check", action="store_true")
+    parser.add_argument("--skip-db-validation", action="store_true")
+    parser.add_argument("--db-validation-config", default="config/database_validation.yaml")
     args = parser.parse_args()
     CONFIG_PATH = Path(args.config)
     ACTIVE_CONFIG = apply_config(CONFIG_PATH)
@@ -618,6 +622,19 @@ def main() -> int:
     started = time.time()
     years = parse_years(args.years)
     logger.info("start v2.1.2 years=%s resume=%s strict=%s force=%s rebuild_from=%s config=%s", years, args.resume, args.strict_resume, args.force, args.rebuild_from_year, CONFIG_PATH)
+    db_validation_result = {"status": "not_configured"}
+    source_db = ACTIVE_CONFIG.get("input", {}).get("source_db_path")
+    if source_db:
+        try:
+            db_validation_result = validate_or_require_full(
+                Path(source_db),
+                args.db_validation_config,
+                force_integrity_check=args.force_integrity_check,
+                skip=args.skip_db_validation,
+            )
+        except DatabaseValidationError as exc:
+            logger.error("DB validation failed: %s", exc)
+            return 2
 
     if not FEATURE_SET_YAML.exists():
         write_feature_set_yaml(FEATURE_SET_YAML)
@@ -639,6 +656,7 @@ def main() -> int:
         "config_sha256": sha256_file(CONFIG_PATH),
         "split_hash": split_hash(ACTIVE_CONFIG),
         "last_started_at": datetime.now().isoformat(timespec="seconds"),
+        "db_validation": db_validation_result if args.skip_db_validation else db_validation_fingerprint(Path(source_db), args.db_validation_config) if source_db else None,
         **ginfo,
     })
     try:

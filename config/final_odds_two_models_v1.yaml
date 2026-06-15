@@ -1,5 +1,6 @@
 version: final_odds_two_models_v1
 input_dataset_dir: outputs/model_feature_dataset_v2_1_2
+source_db_path: "D:/keiba/new_jra_2016-2026_fixed/keiba.db"
 feature_set_yaml: config/feature_sets_v2_1_2.yaml
 feature_set: market_aware
 output_root: outputs/final_odds_two_models_v1

@@ -30,6 +30,7 @@ from scripts.run_final_odds_two_models_v1 import (  # noqa: E402
     sha256_file,
     summarize_bets,
 )
+from src.database.db_validation_cache import DatabaseValidationError, DEFAULT_DB_PATH, db_validation_fingerprint, validate_or_require_full
 
 
 TARGETS = ("win", "place")
@@ -550,7 +551,7 @@ def write_docs(cfg: dict[str, Any], manifest: dict[str, Any], selected: pd.DataF
     atomic_write_text(Path("docs/roi_strategy_refinement_v1_results.md"), "\n".join(result) + "\n")
 
 
-def manifest_fingerprint(cfg: dict[str, Any], config_path: Path) -> dict[str, Any]:
+def manifest_fingerprint(cfg: dict[str, Any], config_path: Path, db_validation: dict[str, Any] | None = None) -> dict[str, Any]:
     root = Path(cfg["source_output_root"])
     files = ["oof_predictions.parquet", "final_predictions.parquet", "bet_details.parquet", "manifest.json"]
     return {
@@ -558,6 +559,7 @@ def manifest_fingerprint(cfg: dict[str, Any], config_path: Path) -> dict[str, An
         "config_file_sha256": sha256_file(config_path),
         "code_sha256": sha256_file(Path(__file__)),
         "source_hashes": {f: sha256_file(root / f) for f in files if (root / f).exists()},
+        "db_validation": db_validation,
     }
 
 
@@ -602,12 +604,33 @@ def should_resume(out: Path, fingerprint: dict[str, Any], strict: bool) -> bool:
     return False
 
 
-def run(config_path: Path, resume: bool = False, strict_resume: bool = False, force: bool = False) -> dict[str, Any]:
+def run(
+    config_path: Path,
+    resume: bool = False,
+    strict_resume: bool = False,
+    force: bool = False,
+    db_validation_config: Path | str = "config/database_validation.yaml",
+    force_integrity_check: bool = False,
+    skip_db_validation: bool = False,
+) -> dict[str, Any]:
     started = time.time()
     cfg = load_config(config_path)
     out = Path(cfg["output_root"])
     out.mkdir(parents=True, exist_ok=True)
-    fingerprint = manifest_fingerprint(cfg, config_path)
+    db_path = Path(cfg.get("source_db_path", DEFAULT_DB_PATH))
+    try:
+        db_validation = validate_or_require_full(
+            db_path,
+            db_validation_config,
+            force_integrity_check=force_integrity_check,
+            skip=skip_db_validation,
+        )
+        if not skip_db_validation:
+            db_validation = db_validation_fingerprint(db_path, db_validation_config)
+    except DatabaseValidationError as exc:
+        print(f"[roi-refine] DB validation failed: {exc}", flush=True)
+        raise SystemExit(2)
+    fingerprint = manifest_fingerprint(cfg, config_path, db_validation)
     if (resume or strict_resume) and not force and should_resume(out, fingerprint, strict_resume):
         return json.loads((out / "manifest.json").read_text(encoding="utf-8"))
     print("[roi-refine] preflight/load source predictions", flush=True)
@@ -685,8 +708,19 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--strict-resume", action="store_true")
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--force-integrity-check", action="store_true")
+    parser.add_argument("--skip-db-validation", action="store_true")
+    parser.add_argument("--db-validation-config", default="config/database_validation.yaml")
     args = parser.parse_args()
-    run(Path(args.config), resume=args.resume, strict_resume=args.strict_resume, force=args.force)
+    run(
+        Path(args.config),
+        resume=args.resume,
+        strict_resume=args.strict_resume,
+        force=args.force,
+        db_validation_config=args.db_validation_config,
+        force_integrity_check=args.force_integrity_check,
+        skip_db_validation=args.skip_db_validation,
+    )
     return 0
 
 

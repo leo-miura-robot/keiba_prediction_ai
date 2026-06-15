@@ -1,6 +1,7 @@
 version: roi_strategy_refinement_v1
 source_output_root: outputs/final_odds_two_models_v1
 feature_dataset_dir: outputs/model_feature_dataset_v2_1_2
+source_db_path: "D:/keiba/new_jra_2016-2026_fixed/keiba.db"
 output_root: outputs/roi_strategy_refinement_v1
 stake_yen: 100
 random_seed: 42

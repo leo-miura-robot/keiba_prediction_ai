@@ -16,6 +16,12 @@ from typing import Any, Iterable
 
 import polars as pl
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.database.db_validation_cache import DatabaseValidationError, db_validation_fingerprint, validate_or_require_full
+
 
 CONFIG_PATH = Path("config/base_runner_dataset_o1_fixed.yaml")
 DB_PATH = Path()
@@ -465,22 +471,31 @@ def table_exists(con: sqlite3.Connection, table: str) -> bool:
     return row is not None
 
 
-def run_preflight(config: dict[str, Any], logger: logging.Logger, integrity_mode: str = "skip") -> dict[str, Any]:
+def run_preflight(
+    config: dict[str, Any],
+    logger: logging.Logger,
+    integrity_mode: str = "skip",
+    db_validation: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     PREFLIGHT_DIR.mkdir(parents=True, exist_ok=True)
     if not DB_PATH.exists():
         raise FileNotFoundError(DB_PATH)
     required = ["NL_RA", "NL_SE", "NL_HR", "NL_H1", "NL_H6", "NL_O1", "NL_O2", "NL_O3", "NL_O4", "NL_O5", "NL_O6"]
     fp = db_fingerprint(DB_PATH)
+    db_validation = db_validation or {}
     started = time.time()
     logger.info("preflight start db=%s", DB_PATH)
+    validation_result = validate_or_require_full(
+        DB_PATH,
+        db_validation.get("config_path", "config/database_validation.yaml"),
+        force_integrity_check=bool(db_validation.get("force_integrity_check", False)),
+        skip=bool(db_validation.get("skip", False)),
+    )
     with connect_ro() as con:
-        integrity_pragma = "integrity_check" if integrity_mode == "full" else "quick_check" if integrity_mode == "quick" else "skipped"
-        if integrity_mode in {"quick", "full"}:
-            logger.info("preflight %s start", integrity_pragma)
-            integrity = con.execute(f"PRAGMA {integrity_pragma}").fetchone()[0]
-            logger.info("preflight %s done result=%s", integrity_pragma, integrity)
-        else:
-            integrity = "skipped"
+        if integrity_mode != "skip":
+            logger.warning("--integrity-mode is deprecated; common DB validation cache is used instead.")
+        integrity_pragma = "cached_validation"
+        integrity = "skipped_by_cache" if validation_result.get("cache_hit") else validation_result.get("status", "unknown")
         missing = [t for t in required if not table_exists(con, t)]
         if missing:
             raise RuntimeError(f"missing required tables: {missing}")
@@ -571,6 +586,7 @@ def run_preflight(config: dict[str, Any], logger: logging.Logger, integrity_mode
         "read_only_connection": True,
         "integrity_pragma": integrity_pragma,
         "integrity_check": integrity,
+        "db_validation": validation_result,
         "required_tables_missing": missing,
         "table_counts": table_counts,
         "config_path": str(CONFIG_PATH),
@@ -582,8 +598,6 @@ def run_preflight(config: dict[str, Any], logger: logging.Logger, integrity_mode
     write_csv_rows(PREFLIGHT_RACE_CSV, race_rows)
     write_csv_rows(PREFLIGHT_SE_O1_CSV, [comparison])
     logger.info("preflight done %s=%s coverage=%.6f exact=%.6f", integrity_pragma, integrity, coverage["tan_odds_coverage"], comparison["exact_match_rate"])
-    if integrity_mode in {"quick", "full"} and integrity != "ok":
-        raise RuntimeError(f"integrity_check failed: {integrity}")
     return {"db_summary": db_summary, "coverage": coverage, "race_completeness": race_rows, "se_o1": comparison}
 
 
@@ -880,6 +894,9 @@ def main() -> int:
     parser.add_argument("--force", action="store_true", help="Rebuild requested years even if complete.")
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--integrity-mode", choices=["skip", "quick", "full"], default="skip", help="SQLite integrity pragma mode. quick/full can be slow on 18GB DBs.")
+    parser.add_argument("--force-integrity-check", action="store_true")
+    parser.add_argument("--skip-db-validation", action="store_true")
+    parser.add_argument("--db-validation-config", default="config/database_validation.yaml")
     args = parser.parse_args()
 
     CONFIG_PATH = Path(args.config)
@@ -892,7 +909,16 @@ def main() -> int:
         return 2
 
     try:
-        preflight = run_preflight(config, logger, integrity_mode=args.integrity_mode)
+        preflight = run_preflight(
+            config,
+            logger,
+            integrity_mode=args.integrity_mode,
+            db_validation={
+                "config_path": args.db_validation_config,
+                "force_integrity_check": args.force_integrity_check,
+                "skip": args.skip_db_validation,
+            },
+        )
     except Exception as exc:
         logger.error("preflight failed: %s", exc)
         logger.error(traceback.format_exc())
@@ -903,6 +929,8 @@ def main() -> int:
     years = parse_years(args.years)
     checkpoint = load_checkpoint()
     current_fp = db_fingerprint(DB_PATH)
+    if not args.skip_db_validation:
+        current_fp["db_validation"] = db_validation_fingerprint(DB_PATH, args.db_validation_config)
     if args.resume and checkpoint.get("db_fingerprint") != current_fp:
         logger.error("resume rejected: DB fingerprint mismatch checkpoint=%s current=%s", checkpoint.get("db_fingerprint"), current_fp)
         return 2
