@@ -1,0 +1,109 @@
+version: place_market_offset_catboost_v1
+input_dataset_dir: outputs/model_feature_dataset_v2_1_2
+current_predictions_dir: outputs/final_odds_two_models_v1
+ev_surface_dir: outputs/place_odds_ev_surface_v1
+source_db_path: "D:/keiba/new_jra_2016-2026_fixed/keiba.db"
+feature_set_yaml: config/feature_sets_v2_1_2.yaml
+output_root: outputs/place_market_offset_catboost_v1
+model_root: models/place_market_offset_catboost_v1
+random_seed: 42
+stake_yen: 100
+epsilon: 1.0e-6
+bootstrap_iterations: 1000
+previous_ev_roi_spearman: -0.636
+folds:
+  - name: fold_2020
+    train_years: [2016, 2017, 2018, 2019]
+    validation_year: 2020
+  - name: fold_2021
+    train_years: [2016, 2017, 2018, 2019, 2020]
+    validation_year: 2021
+  - name: fold_2022
+    train_years: [2016, 2017, 2018, 2019, 2020, 2021]
+    validation_year: 2022
+  - name: fold_2023
+    train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022]
+    validation_year: 2023
+  - name: fold_2024
+    train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    validation_year: 2024
+final_train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+test_year: 2025
+latest_holdout_year: 2026
+target_column: target_place_paid
+eligible_column: eligible_for_place_training
+payout_column: fuku_pay
+odds_column: fuku_odds_low
+market_baseline:
+  model: logistic_regression
+  max_iter: 1000
+  C: 1.0
+  features:
+    - tan_odds
+    - tan_ninki
+    - fuku_odds_low
+    - fuku_odds_high
+    - fuku_ninki
+    - SyussoTosu
+    - place_rank_limit
+    - market_rank
+    - tan_rank
+    - fuku_odds_width
+    - log_tan_odds
+    - log_fuku_low
+    - log_fuku_high
+    - fuku_low_inverse
+    - fuku_mid_inverse
+    - fuku_low_to_race_min
+    - fuku_low_to_race_mean
+residual_models:
+  C1:
+    name: market_offset_fundamental
+    feature_mode: fundamental
+  C2:
+    name: market_offset_limited_market
+    feature_mode: limited_market
+training_params:
+  iterations: 3000
+  learning_rate: 0.05
+  depth: 8
+  l2_leaf_reg: 5.0
+  random_strength: 1.0
+  bootstrap_type: Bayesian
+  bagging_temperature: 1.0
+  loss_function: Logloss
+  eval_metric: Logloss
+  od_type: Iter
+  od_wait: 200
+  random_seed: 42
+  task_type: GPU
+  devices: "0"
+  allow_writing_files: false
+  verbose: 100
+smoke_overrides:
+  iterations: 20
+  od_wait: 8
+  verbose: false
+  train_rows_per_year: 800
+  eval_rows_per_year: 400
+calibration_methods: [none, platt, isotonic]
+selection:
+  years: [2020, 2021, 2022, 2023, 2024]
+  high_odds_min: 5.0
+strategy_rules:
+  - name: strategy1_odds_1_2_2_5_ev_0_85
+    min_odds: 1.2
+    max_odds: 2.5
+    min_ev: 0.85
+  - name: strategy2_ev_1_00
+    min_odds: 0.0
+    max_odds: 999.0
+    min_ev: 1.0
+  - name: strategy3_ev_1_05
+    min_odds: 0.0
+    max_odds: 999.0
+    min_ev: 1.05
+  - name: strategy4_no_odds_limit_ev_1_00
+    min_odds: 0.0
+    max_odds: 999.0
+    min_ev: 1.0

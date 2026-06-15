@@ -12,4 +12,4 @@ database_validation:
   reject_wal: true
   reject_journal: true
   auto_full_check_on_cache_miss: false
-  immutable_read: false
+  immutable_read: true
