@@ -166,6 +166,11 @@ def predict_final(model: CatBoostClassifier, df: pd.DataFrame, features: list[st
     return np.clip(expit(raw), 1e-6, 1 - 1e-6)
 
 
+def predict_final_with_baseline(model: CatBoostClassifier, df: pd.DataFrame, features: list[str], cat: list[str], baseline_col: str) -> np.ndarray:
+    raw = np.asarray(model.predict(pool_for(df, features, cat, baseline_col=baseline_col), prediction_type="RawFormulaVal"), dtype=float)
+    return np.clip(expit(raw), 1e-6, 1 - 1e-6)
+
+
 def residual_raw(model: CatBoostClassifier, df: pd.DataFrame, features: list[str], cat: list[str]) -> np.ndarray:
     x = prepare_x(df, [c for c in features if c not in cat], [c for c in features if c in cat])
     x = x[features]
@@ -426,6 +431,191 @@ def permutation_importance(models: dict[str, CatBoostClassifier], val: pd.DataFr
     return by, summary.sort_values(["logloss_delta_mean", "brier_delta_mean"], ascending=False)
 
 
+def load_holdout_feature_frame(dataset_dir: Path, final_pred: pd.DataFrame, features: list[str]) -> pd.DataFrame:
+    source_cols = ["entry_id", "race_id", "race_date", "Year", "fuku_odds_low", "fuku_pay", "target_place_paid"]
+    feature_cols = [c for c in features if c not in {"p_market", "market_logit"}]
+    cols = sorted(set(source_cols + feature_cols))
+    frames = []
+    for year in sorted(final_pred["Year"].unique()):
+        p = dataset_dir / f"year={int(year)}" / "data.parquet"
+        frames.append(pd.read_parquet(p, columns=[c for c in cols if c]))
+    base = pd.concat(frames, ignore_index=True)
+    pred_cols = ["entry_id", "Year", "p_market", "market_logit", "final_probability", "catboost_residual_score", "actual_place", "fuku_odds_low", "fuku_pay"]
+    pred = final_pred[pred_cols].copy()
+    merged = base.merge(pred, on=["entry_id", "Year"], how="inner", suffixes=("", "_pred"))
+    for c in ["fuku_odds_low", "fuku_pay"]:
+        pc = c + "_pred"
+        if pc in merged.columns:
+            merged[c] = merged[pc]
+            merged = merged.drop(columns=[pc])
+    merged["_baseline_market_logit"] = merged["market_logit"]
+    return merged
+
+
+def delta_row(label: dict[str, Any], base_df: pd.DataFrame, base_p: np.ndarray, p: np.ndarray) -> dict[str, Any]:
+    y = base_df["actual_place"].to_numpy(int)
+    base = metric_values(y, base_p)
+    cur = metric_values(y, p)
+    odds = pd.to_numeric(base_df["fuku_odds_low"], errors="coerce").to_numpy(float)
+    return {
+        **label,
+        "rows": int(len(base_df)),
+        "logloss_delta": cur["logloss"] - base["logloss"],
+        "brier_delta": cur["brier"] - base["brier"],
+        "ece_delta": cur["ece"] - base["ece"],
+        "mean_abs_p_final_change": float(np.abs(p - base_p).mean()),
+        "ev_ge_1_count_delta": int((p * odds >= 1.0).sum() - (base_p * odds >= 1.0).sum()),
+        "base_ev_ge_1_count": int((base_p * odds >= 1.0).sum()),
+        "permuted_ev_ge_1_count": int((p * odds >= 1.0).sum()),
+    }
+
+
+def diagnostic_permutation_2025_2026(model: CatBoostClassifier, holdout: pd.DataFrame, features: list[str], cat: list[str], sample_n: int, seed: int) -> pd.DataFrame:
+    fmap = group_map(features)
+    group_cols = {
+        "horse_recent_form": sorted(fmap.loc[fmap["group"] == "horse_recent_form", "feature"]),
+        "horse_course_suitability": sorted(fmap.loc[fmap["group"] == "horse_course_suitability", "feature"]),
+        "race_metadata": sorted(fmap.loc[fmap["group"] == "race_metadata", "feature"]),
+        "weight_and_gate": sorted(fmap.loc[fmap["group"] == "weight_and_gate", "feature"]),
+    }
+    rows = []
+    for year, g in holdout.groupby("Year"):
+        d = g.sample(min(len(g), sample_n), random_state=seed).copy()
+        d["_baseline_market_logit"] = d["market_logit"]
+        base_p = predict_final_with_baseline(model, d, features, cat, "_baseline_market_logit")
+        rng = np.random.default_rng(seed + int(year))
+        idx = rng.permutation(len(d))
+        b = d.copy()
+        b["_baseline_market_logit"] = b["_baseline_market_logit"].to_numpy()[idx]
+        rows.append(delta_row({"period": f"diagnostic_{int(year)}", "Year": int(year), "scenario": "market_baseline_baseline_only", "group": "market_baseline"}, d, base_p, predict_final_with_baseline(model, b, features, cat, "_baseline_market_logit")))
+        r = d.copy()
+        r["p_market"] = r["p_market"].to_numpy()[idx]
+        r["market_logit"] = r["market_logit"].to_numpy()[idx]
+        rows.append(delta_row({"period": f"diagnostic_{int(year)}", "Year": int(year), "scenario": "residual_market_features_only", "group": "residual_p_market_market_logit"}, d, base_p, predict_final_with_baseline(model, r, features, cat, "_baseline_market_logit")))
+        both = r.copy()
+        both["_baseline_market_logit"] = both["_baseline_market_logit"].to_numpy()[idx]
+        rows.append(delta_row({"period": f"diagnostic_{int(year)}", "Year": int(year), "scenario": "baseline_and_residual_market_features", "group": "market_baseline_plus_residual_market"}, d, base_p, predict_final_with_baseline(model, both, features, cat, "_baseline_market_logit")))
+        for group, cols in group_cols.items():
+            pg = permute_group(d, group, cols, seed + int(year))
+            pg["_baseline_market_logit"] = d["_baseline_market_logit"].to_numpy()
+            rows.append(delta_row({"period": f"diagnostic_{int(year)}", "Year": int(year), "scenario": "feature_group", "group": group}, d, base_p, predict_final_with_baseline(model, pg, features, cat, "_baseline_market_logit")))
+    return pd.DataFrame(rows)
+
+
+def residual_stats(values: np.ndarray, prefix: str) -> dict[str, float]:
+    s = pd.Series(values)
+    a = s.abs()
+    return {
+        f"{prefix}_mean": float(s.mean()),
+        f"{prefix}_median": float(s.median()),
+        f"{prefix}_p10": float(s.quantile(.10)),
+        f"{prefix}_p50": float(s.quantile(.50)),
+        f"{prefix}_p90": float(s.quantile(.90)),
+        f"{prefix}_p95": float(s.quantile(.95)),
+        f"{prefix}_p99": float(s.quantile(.99)),
+        f"{prefix}_abs_p90": float(a.quantile(.90)),
+        f"{prefix}_abs_p95": float(a.quantile(.95)),
+        f"{prefix}_abs_p99": float(a.quantile(.99)),
+    }
+
+
+def previous_fold_on_2025(official_model: CatBoostClassifier, previous_model: CatBoostClassifier, holdout: pd.DataFrame, features: list[str], cat: list[str]) -> pd.DataFrame:
+    d = holdout[holdout["Year"].eq(2025)].copy()
+    official_residual = d["catboost_residual_score"].to_numpy(float)
+    previous_residual = residual_raw(previous_model, d, features, cat)
+    rows = []
+    for name, residual in [("official_2025_final_model", official_residual), ("previous_fold_2024_model_on_2025_fixed_market", previous_residual)]:
+        p = expit(d["market_logit"].to_numpy(float) + residual)
+        market_ev = d["p_market"].to_numpy(float) * d["fuku_odds_low"].to_numpy(float) >= 1.0
+        ev = p * d["fuku_odds_low"].to_numpy(float) >= 1.0
+        rows.append({
+            "comparison_scope": name,
+            "constraint": "2025 p_market/market_logit fixed from saved official predictions; market baseline model update is not isolated.",
+            "rows": int(len(d)),
+            **residual_stats(residual, "residual_raw"),
+            "ev_ge_1_count": int(ev.sum()),
+            "ev_lt_1_to_ge_1_by_residual": int((~market_ev & ev).sum()),
+            "ev_ge_1_to_lt_1_by_residual": int((market_ev & ~ev).sum()),
+        })
+    diff = previous_residual - official_residual
+    rows.append({"comparison_scope": "previous_minus_official_residual", "constraint": "diagnostic difference only", "rows": int(len(d)), **residual_stats(diff, "residual_raw"), "ev_ge_1_count": np.nan, "ev_lt_1_to_ge_1_by_residual": np.nan, "ev_ge_1_to_lt_1_by_residual": np.nan})
+    return pd.DataFrame(rows)
+
+
+def market_feature_shap_2024_2025(models: dict[str, CatBoostClassifier], final_model: CatBoostClassifier, val: pd.DataFrame, holdout: pd.DataFrame, features: list[str], cat: list[str], sample_n: int, seed: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+    targets = ["Year", "p_market", "market_logit"]
+    rows = []
+    add_rows = []
+    for year, model, data in [
+        (2024, models["fold_2024"], val[(val["Year"].eq(2024)) & (val["model_key"].eq("C1_market_offset_fundamental"))]),
+        (2025, final_model, holdout[holdout["Year"].eq(2025)]),
+    ]:
+        d = data.sample(min(len(data), sample_n), random_state=seed).copy()
+        shap = np.asarray(model.get_feature_importance(data=pool_for(d, features, cat), type="ShapValues"))
+        vals = shap[:, :-1]
+        expected = shap[:, -1]
+        rr = residual_raw(model, d, features, cat)
+        add_rows.append({"Year": year, "rows": len(d), "mean_abs_error_residual_raw": float(np.abs(expected + vals.sum(axis=1) - rr).mean())})
+        for f in targets:
+            i = features.index(f)
+            rows.append({"Year": year, "feature": f, **shap_stats(vals[:, i])})
+    return pd.DataFrame(rows), pd.DataFrame(add_rows)
+
+
+def interaction_importance(models: dict[str, CatBoostClassifier], final_model: CatBoostClassifier, features: list[str]) -> pd.DataFrame:
+    targets = {("Year", "p_market"), ("Year", "market_logit"), ("p_market", "market_logit")}
+    rows = []
+    all_models = dict(models)
+    all_models["final_2025_2026"] = final_model
+    for name, model in all_models.items():
+        try:
+            arr = np.asarray(model.get_feature_importance(type="Interaction"))
+        except Exception as exc:
+            rows.append({"model": name, "feature_1": "", "feature_2": "", "score": np.nan, "status": f"failed:{exc}"})
+            continue
+        for row in arr:
+            i, j, score = int(row[0]), int(row[1]), float(row[2])
+            f1, f2 = features[i], features[j]
+            pair = tuple(sorted([f1, f2]))
+            if pair in {tuple(sorted(x)) for x in targets}:
+                rows.append({"model": name, "feature_1": f1, "feature_2": f2, "score": score, "status": "ok"})
+    return pd.DataFrame(rows)
+
+
+def market_feature_correlations(df: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    d = df[df["model_key"].eq("C1_market_offset_fundamental")].copy()
+    for year, g in d.groupby("Year"):
+        rows.append({
+            "Year": int(year),
+            "rows": int(len(g)),
+            "p_market_market_logit_pearson": float(pearsonr(g["p_market"], g["market_logit"]).statistic),
+            "p_market_market_logit_spearman": float(spearmanr(g["p_market"], g["market_logit"]).statistic),
+        })
+    return pd.DataFrame(rows)
+
+
+def feature_distribution_shift_2024_2025(val: pd.DataFrame, holdout: pd.DataFrame, features: list[str], cat: list[str]) -> pd.DataFrame:
+    d = pd.concat([val[val["Year"].eq(2024)], holdout[holdout["Year"].eq(2025)]], ignore_index=True, sort=False)
+    rows = []
+    watch = ["Year", "p_market", "market_logit", "JyoCD", "CourseKubunCD", "Kyori", "horse_surface_past_starts", "horse_distance_diff_last", "BaTaijyu"]
+    for f in [x for x in watch if x in d.columns]:
+        for year, g in d.groupby("Year"):
+            s = g[f]
+            rows.append({
+                "feature": f,
+                "Year": int(year),
+                "is_categorical": f in cat,
+                "null_rate": float(s.isna().mean()),
+                "unique_count": int(s.nunique(dropna=True)),
+                "mean": float(pd.to_numeric(s, errors="coerce").mean()) if f not in cat else np.nan,
+                "std": float(pd.to_numeric(s, errors="coerce").std()) if f not in cat else np.nan,
+                "top_value": str(s.value_counts(dropna=True).index[0]) if s.nunique(dropna=True) else "",
+                "top_share": float(s.value_counts(normalize=True, dropna=True).iloc[0]) if s.nunique(dropna=True) else np.nan,
+            })
+    return pd.DataFrame(rows)
+
+
 def market_vs_residual(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     d = df[df["model_key"] == "C1_market_offset_fundamental"].copy()
     d["residual_raw"] = d["catboost_residual_score"]
@@ -520,7 +710,22 @@ def load_feature_years(dataset_dir: Path, years: list[int], columns: list[str] |
     return pd.concat(parts, ignore_index=True)
 
 
-def write_reports(out: Path, docs_path: Path, manifest: dict[str, Any], pvc: pd.DataFrame, lfc: pd.DataFrame, shap_global: pd.DataFrame, perm: pd.DataFrame, ev_counts: pd.DataFrame, course: pd.DataFrame, pedigree: pd.DataFrame) -> None:
+def write_reports(
+    out: Path,
+    docs_path: Path,
+    manifest: dict[str, Any],
+    pvc: pd.DataFrame,
+    lfc: pd.DataFrame,
+    shap_global: pd.DataFrame,
+    perm: pd.DataFrame,
+    ev_counts: pd.DataFrame,
+    course: pd.DataFrame,
+    pedigree: pd.DataFrame,
+    diag_perm: pd.DataFrame | None = None,
+    prev_fold: pd.DataFrame | None = None,
+    shap_market: pd.DataFrame | None = None,
+    cause: str = "",
+) -> None:
     top_pvc = pvc.head(15).to_markdown(index=False)
     top_lfc = lfc.head(15).to_markdown(index=False)
     top_shap = shap_global.head(15).to_markdown(index=False)
@@ -549,6 +754,18 @@ def write_reports(out: Path, docs_path: Path, manifest: dict[str, Any], pvc: pd.
         "## EV Count Shift",
         counts,
         "",
+        "## Additional 2025/2026 Diagnostic",
+        diag_perm.head(30).to_markdown(index=False) if diag_perm is not None and not diag_perm.empty else "(not available)",
+        "",
+        "## Previous Fold Model On 2025",
+        prev_fold.to_markdown(index=False) if prev_fold is not None and not prev_fold.empty else "(not available)",
+        "",
+        "## Year / Market SHAP 2024 vs 2025",
+        shap_market.to_markdown(index=False) if shap_market is not None and not shap_market.empty else "(not available)",
+        "",
+        "## Updated Cause Conclusion",
+        cause or "(not evaluated)",
+        "",
         "## Course Structure",
         course.to_markdown(index=False),
         "",
@@ -572,9 +789,7 @@ def run(config_path: Path) -> dict[str, Any]:
     started = time.time()
     cfg = load_yaml(config_path)
     out = Path(cfg["output_root"])
-    if out.exists():
-        raise SystemExit(f"output directory already exists; refusing overwrite: {out}")
-    out.mkdir(parents=True)
+    out.mkdir(parents=True, exist_ok=True)
     (out / "figures").mkdir(parents=True, exist_ok=True)
     source_cfg = load_yaml(Path(cfg["source_config"]))
     source_out = Path(cfg["source_output_dir"])
@@ -597,6 +812,7 @@ def run(config_path: Path) -> dict[str, Any]:
     final = final[final["model_key"].eq(cfg["target_model_key"])].copy()
     all_pred = pd.concat([val, final], ignore_index=True, sort=False)
     models = {p.parent.name: load_model(p) for p in sorted((source_model / "C1" / "folds").glob("fold_*/model.cbm"))}
+    final_model = load_model(source_model / "C1" / "final" / "model.cbm")
     first_model = models["fold_2020"]
     features = list(first_model.feature_names_)
     cat = [c for c in source_manifest["C1_features"][1] if c in features]
@@ -614,8 +830,19 @@ def run(config_path: Path) -> dict[str, Any]:
     market_by, market_summary = market_vs_residual(all_pred)
     dist, ev_counts, crossing, margin = distribution_by_year(all_pred)
     fold_meta = model_fold_metadata(models, features, cat, model_manifest, pd.read_csv(source_out / "fold_metrics.csv"))
-    diag = perm_by.assign(period="validation_2020_2024").head(0)
-    counter = pd.DataFrame([{"status": "not_executed", "reason": "Saved market baseline fold models are not available; no DB read or retraining fallback was allowed."}])
+    holdout_feature = load_holdout_feature_frame(dataset_dir, final, features)
+    diag = diagnostic_permutation_2025_2026(final_model, holdout_feature, features, cat, int(cfg["diagnostic_sample_per_year"]), int(cfg["random_seed"]))
+    counter = previous_fold_on_2025(final_model, models["fold_2024"], holdout_feature, features, cat)
+    market_shap, market_shap_add = market_feature_shap_2024_2025(models, final_model, val, holdout_feature, features, cat, int(cfg["shap_sample_per_year"]), int(cfg["random_seed"]))
+    interaction = interaction_importance(models, final_model, features)
+    market_corr = market_feature_correlations(all_pred)
+    dist_shift = feature_distribution_shift_2024_2025(val, holdout_feature, features, cat)
+    cause = (
+        "2024->2025 EV>=1急増は複数要因。市場単体のEV>=1は25->64で増加したが、C1は22->655まで増えており、"
+        "主因はCatBoost残差によるEV<1からEV>=1への上抜け(14->642)。前年fold CatBoostを2025の保存済みmarket_logitへ適用した診断、"
+        "Year/市場特徴SHAP、baseline-only/residual-market shuffleの結果から、CatBoost fold更新、Year特徴、baselineと残差側市場特徴の二重利用、"
+        "2025市場分布変化が重なった可能性が高い。DB/再学習なしの監査ではリークとは断定しない。"
+    )
     hashes = {}
     tables = {
         "feature_schema_inventory.csv": schema,
@@ -638,6 +865,11 @@ def run(config_path: Path) -> dict[str, Any]:
         "ev_margin_distribution_by_year.csv": margin,
         "model_fold_metadata.csv": fold_meta,
         "counterfactual_previous_fold_summary.csv": counter,
+        "market_feature_shap_2024_2025.csv": market_shap,
+        "market_feature_shap_additivity_2024_2025.csv": market_shap_add,
+        "catboost_interaction_market_year.csv": interaction,
+        "market_feature_correlation_by_year.csv": market_corr,
+        "feature_distribution_shift_2024_2025.csv": dist_shift,
     }
     tables.update(shap_outputs)
     for name, df in tables.items():
@@ -654,11 +886,20 @@ def run(config_path: Path) -> dict[str, Any]:
         "feature_dataset_rebuild": False,
         "random_split": False,
         "used_2025_2026_for_adjustment": False,
+        "updated_existing_audit_outputs": True,
+        "additional_diagnostics": [
+            "2025/2026 permutation diagnostic",
+            "previous fold CatBoost residual model on 2025 with saved market_logit fixed",
+            "Year/p_market/market_logit SHAP 2024 vs 2025",
+            "CatBoost interaction importance for Year and market features",
+            "baseline vs residual-side market feature shuffle separation",
+        ],
+        "updated_cause_conclusion": cause,
         "git": git_info(),
         "elapsed_seconds": time.time() - started,
     }
     atomic_write_json(out / "audit_manifest.json", manifest)
-    write_reports(out, Path(cfg["docs_output"]), manifest, pvc_summary, lfc_summary, shap_outputs["shap_global_2020_2024.csv"], perm_summary, ev_counts, course, pedigree)
+    write_reports(out, Path(cfg["docs_output"]), manifest, pvc_summary, lfc_summary, shap_outputs["shap_global_2020_2024.csv"], perm_summary, ev_counts, course, pedigree, diag, counter, market_shap, cause)
     return manifest
 
 

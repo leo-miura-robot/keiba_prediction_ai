@@ -90,6 +90,44 @@
 |   2025 |           47497 |    3455 |             655 |    0.0137903   |                          64 |
 |   2026 |           21276 |    1506 |             253 |    0.0118913   |                          46 |
 
+## Additional 2025/2026 Diagnostic
+| period          |   Year | scenario                              | group                                |   rows |   logloss_delta |   brier_delta |   ece_delta |   mean_abs_p_final_change |   ev_ge_1_count_delta |   base_ev_ge_1_count |   permuted_ev_ge_1_count |
+|:----------------|-------:|:--------------------------------------|:-------------------------------------|-------:|----------------:|--------------:|------------:|--------------------------:|----------------------:|---------------------:|-------------------------:|
+| diagnostic_2025 |   2025 | market_baseline_baseline_only         | market_baseline                      |   8000 |     0.286445    |   0.0741974   |  0.136068   |                 0.199483  |                  2675 |                  113 |                     2788 |
+| diagnostic_2025 |   2025 | residual_market_features_only         | residual_p_market_market_logit       |   8000 |     0.00280957  |   0.00118906  |  0.00447033 |                 0.0234987 |                    46 |                  113 |                      159 |
+| diagnostic_2025 |   2025 | baseline_and_residual_market_features | market_baseline_plus_residual_market |   8000 |     0.322523    |   0.0825047   |  0.148763   |                 0.209717  |                  2729 |                  113 |                     2842 |
+| diagnostic_2025 |   2025 | feature_group                         | horse_recent_form                    |   8000 |     0.00564438  |   0.00150352  |  0.0102583  |                 0.0334587 |                    25 |                  113 |                      138 |
+| diagnostic_2025 |   2025 | feature_group                         | horse_course_suitability             |   8000 |     0.00441209  |   0.00152642  |  0.00791258 |                 0.0286919 |                    21 |                  113 |                      134 |
+| diagnostic_2025 |   2025 | feature_group                         | race_metadata                        |   8000 |     0.00113529  |   0.00033075  |  0.00398201 |                 0.0209796 |                     5 |                  113 |                      118 |
+| diagnostic_2025 |   2025 | feature_group                         | weight_and_gate                      |   8000 |    -0.000165017 |  -0.000129447 |  0.00473387 |                 0.0219166 |                   -16 |                  113 |                       97 |
+| diagnostic_2026 |   2026 | market_baseline_baseline_only         | market_baseline                      |   8000 |     0.303524    |   0.0756661   |  0.126337   |                 0.191611  |                  2596 |                   94 |                     2690 |
+| diagnostic_2026 |   2026 | residual_market_features_only         | residual_p_market_market_logit       |   8000 |     0.00587072  |   0.00245271  |  0.00709006 |                 0.0243733 |                    65 |                   94 |                      159 |
+| diagnostic_2026 |   2026 | baseline_and_residual_market_features | market_baseline_plus_residual_market |   8000 |     0.348891    |   0.0861942   |  0.140867   |                 0.203685  |                  2643 |                   94 |                     2737 |
+| diagnostic_2026 |   2026 | feature_group                         | horse_recent_form                    |   8000 |     0.00517612  |   0.00124055  |  0.00248969 |                 0.0314033 |                    15 |                   94 |                      109 |
+| diagnostic_2026 |   2026 | feature_group                         | horse_course_suitability             |   8000 |     0.0047418   |   0.00177108  |  0.00979733 |                 0.0256628 |                    -6 |                   94 |                       88 |
+| diagnostic_2026 |   2026 | feature_group                         | race_metadata                        |   8000 |     0.00186158  |   0.000524917 |  0.00131764 |                 0.0175504 |                    15 |                   94 |                      109 |
+| diagnostic_2026 |   2026 | feature_group                         | weight_and_gate                      |   8000 |     0.00300523  |   0.00111378  |  0.00368476 |                 0.0204599 |                   -23 |                   94 |                       71 |
+
+## Previous Fold Model On 2025
+| comparison_scope                              | constraint                                                                                                      |   rows |   residual_raw_mean |   residual_raw_median |   residual_raw_p10 |   residual_raw_p50 |   residual_raw_p90 |   residual_raw_p95 |   residual_raw_p99 |   residual_raw_abs_p90 |   residual_raw_abs_p95 |   residual_raw_abs_p99 |   ev_ge_1_count |   ev_lt_1_to_ge_1_by_residual |   ev_ge_1_to_lt_1_by_residual |
+|:----------------------------------------------|:----------------------------------------------------------------------------------------------------------------|-------:|--------------------:|----------------------:|-------------------:|-------------------:|-------------------:|-------------------:|-------------------:|-----------------------:|-----------------------:|-----------------------:|----------------:|------------------------------:|------------------------------:|
+| official_2025_final_model                     | 2025 p_market/market_logit fixed from saved official predictions; market baseline model update is not isolated. |  47497 |          -0.184663  |            -0.167412  |          -0.697939 |         -0.167412  |           0.299923 |           0.423913 |           0.686344 |               0.718081 |               0.878482 |               1.24062  |             655 |                           642 |                            51 |
+| previous_fold_2024_model_on_2025_fixed_market | 2025 p_market/market_logit fixed from saved official predictions; market baseline model update is not isolated. |  47497 |          -0.0319784 |            -0.0225946 |          -0.188042 |         -0.0225946 |           0.105045 |           0.139652 |           0.247378 |               0.202193 |               0.257839 |               0.392479 |              70 |                            42 |                            36 |
+| previous_minus_official_residual              | diagnostic difference only                                                                                      |  47497 |           0.152685  |             0.134377  |          -0.261137 |          0.134377  |           0.589251 |           0.733423 |           1.03015  |               0.607618 |               0.748361 |               1.04299  |             nan |                           nan |                           nan |
+
+## Year / Market SHAP 2024 vs 2025
+|   Year | feature      |   mean_abs_shap |   mean_signed_shap |   median_abs_shap |   p90_abs_shap |   p99_abs_shap |   positive_share |   sample_rows |
+|-------:|:-------------|----------------:|-------------------:|------------------:|---------------:|---------------:|-----------------:|--------------:|
+|   2024 | Year         |       0.0679507 |        0.0678268   |         0.0765308 |      0.105882  |       0.121986 |           0.9792 |          2500 |
+|   2024 | p_market     |       0.0352546 |       -0.00239889  |         0.0318288 |      0.0552629 |       0.261718 |           0.4472 |          2500 |
+|   2024 | market_logit |       0.0189336 |       -0.000337447 |         0.0159989 |      0.0303437 |       0.161381 |           0.4076 |          2500 |
+|   2025 | Year         |       0.0917937 |        0.0917073   |         0.094424  |      0.139592  |       0.169741 |           0.9956 |          2500 |
+|   2025 | p_market     |       0.0798018 |       -0.0179775   |         0.0690723 |      0.148301  |       0.396997 |           0.346  |          2500 |
+|   2025 | market_logit |       0.0408389 |       -0.006566    |         0.0355466 |      0.0721153 |       0.200098 |           0.4276 |          2500 |
+
+## Updated Cause Conclusion
+2024->2025 EV>=1急増は複数要因。市場単体のEV>=1は25->64で増加したが、C1は22->655まで増えており、主因はCatBoost残差によるEV<1からEV>=1への上抜け(14->642)。前年fold CatBoostを2025の保存済みmarket_logitへ適用した診断、Year/市場特徴SHAP、baseline-only/residual-market shuffleの結果から、CatBoost fold更新、Year特徴、baselineと残差側市場特徴の二重利用、2025市場分布変化が重なった可能性が高い。DB/再学習なしの監査ではリークとは断定しない。
+
 ## Course Structure
 | concept               | status        | matched_columns     | included_in_c1   | notes   |
 |:----------------------|:--------------|:--------------------|:-----------------|:--------|
