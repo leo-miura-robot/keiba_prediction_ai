@@ -1,5 +1,0 @@
-data_split,rows,races
-train,383401,27639
-validation,46752,3454
-test,47497,3455
-latest_holdout,21276,1506

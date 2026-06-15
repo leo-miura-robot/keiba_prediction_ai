@@ -1,4 +1,0 @@
-﻿plan,recommendation,root_solution,win_coverage,place_coverage,pre_race_availability,cost,rebuild_range
-A_O1_reacquire_or_fix_external_ingestion,primary,high,expected high if correct O1 state is acquired,expected high if correct O1 state is acquired,best if correct snapshot is selected,high,DB -> base_runner_dataset -> V2.1.1+ -> market-aware models/predictions
-B_SE_odds_for_historical_market_comparison_only,conditional,low,high for win only,none,not proven,low,analysis-only if not used as model feature
-C_COALESCE_O1_SE,not_now,medium but semantically risky,high for win,still poor unless place source fixed,dangerous due to mixed timing,medium,"would require base/features/models, but prohibited before cause confirmation"

@@ -18,8 +18,8 @@ import polars as pl
 
 
 CONFIG_PATH = Path("config/base_runner_dataset_o1_fixed.yaml")
-DB_PATH = Path(r"D:\keiba\new_jra_2016-2026_fixed\keiba.db")
-OLD_DB_PATH = Path(r"D:\keiba\new_jra_2016-2026\keiba.db")
+DB_PATH = Path()
+OLD_DB_PATH = Path()
 OUT_DIR = Path("outputs/base_runner_dataset_o1_fixed")
 DATASET_DIR = OUT_DIR
 LOG_DIR = Path("logs")
@@ -465,7 +465,7 @@ def table_exists(con: sqlite3.Connection, table: str) -> bool:
     return row is not None
 
 
-def run_preflight(config: dict[str, Any], logger: logging.Logger, full_integrity_check: bool = False) -> dict[str, Any]:
+def run_preflight(config: dict[str, Any], logger: logging.Logger, integrity_mode: str = "skip") -> dict[str, Any]:
     PREFLIGHT_DIR.mkdir(parents=True, exist_ok=True)
     if not DB_PATH.exists():
         raise FileNotFoundError(DB_PATH)
@@ -474,10 +474,13 @@ def run_preflight(config: dict[str, Any], logger: logging.Logger, full_integrity
     started = time.time()
     logger.info("preflight start db=%s", DB_PATH)
     with connect_ro() as con:
-        integrity_pragma = "integrity_check" if full_integrity_check else "quick_check"
-        logger.info("preflight %s start", integrity_pragma)
-        integrity = con.execute(f"PRAGMA {integrity_pragma}").fetchone()[0]
-        logger.info("preflight %s done result=%s", integrity_pragma, integrity)
+        integrity_pragma = "integrity_check" if integrity_mode == "full" else "quick_check" if integrity_mode == "quick" else "skipped"
+        if integrity_mode in {"quick", "full"}:
+            logger.info("preflight %s start", integrity_pragma)
+            integrity = con.execute(f"PRAGMA {integrity_pragma}").fetchone()[0]
+            logger.info("preflight %s done result=%s", integrity_pragma, integrity)
+        else:
+            integrity = "skipped"
         missing = [t for t in required if not table_exists(con, t)]
         if missing:
             raise RuntimeError(f"missing required tables: {missing}")
@@ -579,7 +582,7 @@ def run_preflight(config: dict[str, Any], logger: logging.Logger, full_integrity
     write_csv_rows(PREFLIGHT_RACE_CSV, race_rows)
     write_csv_rows(PREFLIGHT_SE_O1_CSV, [comparison])
     logger.info("preflight done %s=%s coverage=%.6f exact=%.6f", integrity_pragma, integrity, coverage["tan_odds_coverage"], comparison["exact_match_rate"])
-    if integrity != "ok":
+    if integrity_mode in {"quick", "full"} and integrity != "ok":
         raise RuntimeError(f"integrity_check failed: {integrity}")
     return {"db_summary": db_summary, "coverage": coverage, "race_completeness": race_rows, "se_o1": comparison}
 
@@ -876,7 +879,7 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true", help="Skip completed checkpoint years.")
     parser.add_argument("--force", action="store_true", help="Rebuild requested years even if complete.")
     parser.add_argument("--preflight-only", action="store_true")
-    parser.add_argument("--full-integrity-check", action="store_true", help="Use PRAGMA integrity_check instead of quick_check.")
+    parser.add_argument("--integrity-mode", choices=["skip", "quick", "full"], default="skip", help="SQLite integrity pragma mode. quick/full can be slow on 18GB DBs.")
     args = parser.parse_args()
 
     CONFIG_PATH = Path(args.config)
@@ -889,7 +892,7 @@ def main() -> int:
         return 2
 
     try:
-        preflight = run_preflight(config, logger, full_integrity_check=args.full_integrity_check)
+        preflight = run_preflight(config, logger, integrity_mode=args.integrity_mode)
     except Exception as exc:
         logger.error("preflight failed: %s", exc)
         logger.error(traceback.format_exc())

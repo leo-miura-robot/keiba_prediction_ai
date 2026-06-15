@@ -7,6 +7,10 @@ venv/
 # Logs
 logs/*.log
 
+# Generated artifacts: keep these local; they are reproducible and too large for Git/GitHub.
+outputs/
+models/
+
 # Large generated datasets
 outputs/base_runner_dataset/
 outputs/model_feature_dataset/

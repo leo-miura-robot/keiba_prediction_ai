@@ -1,0 +1,62 @@
+version: roi_validation_v2_1_2_v1
+model_version: catboost_baseline_v2_1_2_v1
+prediction_root: outputs/model_training/catboost_baseline_v2_1_2_v1/predictions
+training_output_root: outputs/model_training/catboost_baseline_v2_1_2_v1
+feature_dataset_dir: outputs/model_feature_dataset_v2_1_2
+output_root: outputs/roi_validation_v2_1_2_v1
+random_seed: 42
+bootstrap_iterations: 1000
+stake_yen: 100
+splits:
+  train:
+    years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+  validation:
+    years: [2024]
+  test:
+    years: [2025]
+  latest_holdout:
+    years: [2026]
+targets:
+  win:
+    actual_column: target_win_paid
+    payout_column: tan_pay
+    odds_column: tan_odds
+    ev_column: win_ev
+    roi_goal_percent: 90.0
+  place:
+    actual_column: target_place_paid
+    payout_column: fuku_pay
+    odds_column: fuku_odds_low
+    odds_high_column: fuku_odds_high
+    ev_column: place_ev_low
+    roi_goal_percent: 90.0
+feature_sets:
+  - market_free
+  - market_history
+  - market_aware
+market_aware_notice: "market_aware uses final current-race odds and is an ideal-condition model, not the main pre-race live candidate."
+live_candidate_feature_set: market_history
+rule_selection:
+  min_validation_bets: 500
+  max_rules_per_model: 3
+  top_n: [1, 2]
+  model_agreement_min: [1, 2, 3]
+  margin_min: [0.0, 0.02, 0.05]
+  entropy_max_quantiles: [1.0, 0.75]
+  win:
+    ev_min: [1.00, 1.05, 1.10, 1.20]
+    probability_min: [0.00, 0.08, 0.10, 0.15]
+    odds_bands:
+      - [1.0, 999.0]
+      - [1.5, 5.0]
+      - [5.0, 20.0]
+      - [20.0, 999.0]
+    market_gap_min: [-999.0, 0.00, 0.02]
+  place:
+    ev_min: [1.00, 1.05, 1.10, 1.20]
+    probability_min: [0.00, 0.10, 0.15, 0.20]
+    odds_bands:
+      - [1.0, 999.0]
+      - [1.5, 2.0]
+      - [2.0, 3.0]
+      - [5.0, 999.0]

@@ -41,7 +41,8 @@ def test_v2_1_2_feature_sets_validate_and_keep_market_boundaries() -> None:
 
 
 def test_fixed_db_read_only_and_fingerprint_if_available() -> None:
-    db_path = Path("D:/keiba/new_jra_2016-2026_fixed/keiba.db")
+    cfg = base_runner.load_simple_yaml(Path("config/base_runner_dataset_o1_fixed.yaml"))
+    db_path = Path(str(cfg["database"]["path"]))
     if not db_path.exists():
         pytest.skip("fixed DB is not available")
     fp = base_runner.db_fingerprint(db_path)

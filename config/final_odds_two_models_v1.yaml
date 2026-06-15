@@ -1,0 +1,83 @@
+version: final_odds_two_models_v1
+input_dataset_dir: outputs/model_feature_dataset_v2_1_2
+feature_set_yaml: config/feature_sets_v2_1_2.yaml
+feature_set: market_aware
+output_root: outputs/final_odds_two_models_v1
+model_root: models/final_odds_two_models_v1
+random_seed: 42
+stake_yen: 100
+bootstrap_iterations: 1000
+ideal_condition_notice: "This is a final-odds ideal-condition model. It uses final current-race odds as model inputs and is not a pre-race live operation model."
+folds:
+  - name: fold_2020
+    train_years: [2016, 2017, 2018, 2019]
+    validation_year: 2020
+  - name: fold_2021
+    train_years: [2016, 2017, 2018, 2019, 2020]
+    validation_year: 2021
+  - name: fold_2022
+    train_years: [2016, 2017, 2018, 2019, 2020, 2021]
+    validation_year: 2022
+  - name: fold_2023
+    train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022]
+    validation_year: 2023
+  - name: fold_2024
+    train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    validation_year: 2024
+final_train_years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+test_year: 2025
+latest_holdout_year: 2026
+targets:
+  win:
+    target_column: target_win_paid
+    eligible_column: eligible_for_win_training
+    payout_column: tan_pay
+    odds_column: tan_odds
+  place:
+    target_column: target_place_paid
+    eligible_column: eligible_for_place_training
+    payout_column: fuku_pay
+    odds_column: fuku_odds_low
+    odds_high_column: fuku_odds_high
+training_params:
+  iterations: 3000
+  learning_rate: 0.05
+  depth: 8
+  l2_leaf_reg: 5.0
+  random_strength: 1.0
+  bootstrap_type: Bayesian
+  bagging_temperature: 1.0
+  loss_function: Logloss
+  eval_metric: Logloss
+  od_type: Iter
+  od_wait: 200
+  random_seed: 42
+  task_type: GPU
+  devices: "0"
+  allow_writing_files: false
+  verbose: 100
+smoke_overrides:
+  iterations: 20
+  od_wait: 8
+  verbose: false
+  train_rows_per_year: 800
+  eval_rows_per_year: 400
+calibration_methods: [none, platt, isotonic]
+alpha_candidates: [0.5, 0.6, 0.7, 0.8, 1.0]
+rule_selection:
+  max_rules_per_target: 3
+  min_validation_bets: 500
+  jaccard_duplicate_threshold: 0.8
+  strategies: [core, value, longshot]
+  longshot_max_share: 0.10
+  odds_thresholds:
+    win:
+      - {min_odds: 1.0, max_odds: 5.0, ev_min: 1.03}
+      - {min_odds: 5.0, max_odds: 10.0, ev_min: 1.08}
+      - {min_odds: 10.0, max_odds: 20.0, ev_min: 1.18}
+      - {min_odds: 20.0, max_odds: 999.0, ev_min: 1.35}
+    place:
+      - {min_odds: 1.0, max_odds: 1.5, ev_min: 1.02}
+      - {min_odds: 1.5, max_odds: 2.0, ev_min: 1.05}
+      - {min_odds: 2.0, max_odds: 3.0, ev_min: 1.10}
+      - {min_odds: 3.0, max_odds: 999.0, ev_min: 1.20}

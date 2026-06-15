@@ -1,6 +1,0 @@
-data_split,market_exclusion_reason,races
-latest_holdout,missing_odds_runner,1064
-test,missing_odds_runner,2629
-train,missing_odds_runner,19693
-train,missing_winner,1
-validation,missing_odds_runner,2532

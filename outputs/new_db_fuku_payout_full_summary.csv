@@ -1,3 +1,0 @@
-﻿validation,db_path,rank_column,normal_only,races_seen,races_with_hr,eligible_place_rows,matched_place_rows,missing_place_rows,races_with_missing_place,slot1_used,slot2_used,slot3_used,slot4_used,slot5_used,max_slots_used,elapsed_sec
-KakuteiJyuni_normal_only,D:\keiba\new_jra_2016-2026\keiba.db,KakuteiJyuni,True,36054,36054,107544,107543,1,1,36054,36054,36054,87,1,5,1.325
-NyusenJyuni_all,D:\keiba\new_jra_2016-2026\keiba.db,NyusenJyuni,False,36054,36054,107559,107557,2,2,36054,36054,36054,87,1,5,0.996

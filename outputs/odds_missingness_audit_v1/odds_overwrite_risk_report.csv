@@ -1,2 +1,0 @@
-﻿risk_item,status,evidence,history_available_in_db,conclusion
-empty_later_record_overwrites_valid_odds,not_confirmed_from_repo_code,0 repository matches with replace/upsert syntax,False,現DBに履歴テーブルがなければ、有効値から欠損への遷移はDB単体では証明できない。
