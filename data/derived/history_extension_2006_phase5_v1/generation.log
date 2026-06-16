@@ -1,0 +1,75 @@
+2026-06-16 22:41:01,251 INFO Fetching 2006-2015 base runners
+2026-06-16 22:41:01,252 INFO year=2006 query start
+2026-06-16 22:41:03,618 INFO year=2006 query done rows=49365 elapsed=2.366s
+2026-06-16 22:41:05,484 INFO year=2007 query start
+2026-06-16 22:41:07,215 INFO year=2007 query done rows=49190 elapsed=1.731s
+2026-06-16 22:41:08,821 INFO year=2008 query start
+2026-06-16 22:41:10,786 INFO year=2008 query done rows=50998 elapsed=1.965s
+2026-06-16 22:41:12,539 INFO year=2009 query start
+2026-06-16 22:41:14,369 INFO year=2009 query done rows=50512 elapsed=1.830s
+2026-06-16 22:41:16,155 INFO year=2010 query start
+2026-06-16 22:41:17,856 INFO year=2010 query done rows=50460 elapsed=1.700s
+2026-06-16 22:41:19,717 INFO year=2011 query start
+2026-06-16 22:41:21,208 INFO year=2011 query done rows=49298 elapsed=1.490s
+2026-06-16 22:41:22,921 INFO year=2012 query start
+2026-06-16 22:41:24,489 INFO year=2012 query done rows=50133 elapsed=1.568s
+2026-06-16 22:41:26,152 INFO year=2013 query start
+2026-06-16 22:41:27,634 INFO year=2013 query done rows=50685 elapsed=1.481s
+2026-06-16 22:41:29,389 INFO year=2014 query start
+2026-06-16 22:41:30,805 INFO year=2014 query done rows=51243 elapsed=1.415s
+2026-06-16 22:41:32,543 INFO year=2015 query start
+2026-06-16 22:41:33,845 INFO year=2015 query done rows=49992 elapsed=1.302s
+2026-06-16 22:41:35,623 INFO Fetching 2016-2026 base runners
+2026-06-16 22:41:35,624 INFO year=2016 query start
+2026-06-16 22:41:37,475 INFO year=2016 query done rows=50076 elapsed=1.852s
+2026-06-16 22:41:39,106 INFO year=2017 query start
+2026-06-16 22:41:40,498 INFO year=2017 query done rows=49838 elapsed=1.391s
+2026-06-16 22:41:42,365 INFO year=2018 query start
+2026-06-16 22:41:43,718 INFO year=2018 query done rows=49124 elapsed=1.354s
+2026-06-16 22:41:45,235 INFO year=2019 query start
+2026-06-16 22:41:46,628 INFO year=2019 query done rows=47933 elapsed=1.393s
+2026-06-16 22:41:48,089 INFO year=2020 query start
+2026-06-16 22:41:49,414 INFO year=2020 query done rows=48427 elapsed=1.325s
+2026-06-16 22:41:50,900 INFO year=2021 query start
+2026-06-16 22:41:52,090 INFO year=2021 query done rows=47821 elapsed=1.190s
+2026-06-16 22:41:53,553 INFO year=2022 query start
+2026-06-16 22:41:54,831 INFO year=2022 query done rows=47220 elapsed=1.278s
+2026-06-16 22:41:56,264 INFO year=2023 query start
+2026-06-16 22:41:57,416 INFO year=2023 query done rows=47672 elapsed=1.152s
+2026-06-16 22:41:58,876 INFO year=2024 query start
+2026-06-16 22:41:59,875 INFO year=2024 query done rows=47212 elapsed=1.000s
+2026-06-16 22:42:01,298 INFO year=2025 query start
+2026-06-16 22:42:01,953 INFO year=2025 query done rows=48058 elapsed=0.655s
+2026-06-16 22:42:03,392 INFO year=2026 query start
+2026-06-16 22:42:03,677 INFO year=2026 query done rows=22500 elapsed=0.285s
+2026-06-16 22:42:04,375 INFO Concatenating canonical race rows
+2026-06-16 22:42:05,033 INFO Building history features
+2026-06-16 22:42:05,033 INFO Building history features for 2006
+2026-06-16 22:42:09,655 INFO Building history features for 2007
+2026-06-16 22:42:14,770 INFO Building history features for 2008
+2026-06-16 22:42:19,583 INFO history_v2_1 progress rows=50474 date=2008-12-27 elapsed=3.2s
+2026-06-16 22:42:19,936 INFO Building history features for 2009
+2026-06-16 22:42:24,709 INFO history_v2_1 progress rows=50512 date=2009-12-27 elapsed=3.2s
+2026-06-16 22:42:25,045 INFO Building history features for 2010
+2026-06-16 22:42:29,818 INFO history_v2_1 progress rows=50460 date=2010-12-26 elapsed=3.2s
+2026-06-16 22:42:30,153 INFO Building history features for 2011
+2026-06-16 22:42:35,157 INFO Building history features for 2012
+2026-06-16 22:42:40,136 INFO history_v2_1 progress rows=50133 date=2012-12-24 elapsed=3.4s
+2026-06-16 22:42:40,494 INFO Building history features for 2013
+2026-06-16 22:42:45,389 INFO history_v2_1 progress rows=50303 date=2013-12-22 elapsed=3.3s
+2026-06-16 22:42:45,768 INFO Building history features for 2014
+2026-06-16 22:42:50,671 INFO history_v2_1 progress rows=50527 date=2014-12-21 elapsed=3.2s
+2026-06-16 22:42:51,081 INFO Building history features for 2015
+2026-06-16 22:42:56,452 INFO Building history features for 2016
+2026-06-16 22:43:01,535 INFO history_v2_1 progress rows=50076 date=2016-12-25 elapsed=3.4s
+2026-06-16 22:43:01,922 INFO Building history features for 2017
+2026-06-16 22:43:07,216 INFO Building history features for 2018
+2026-06-16 22:43:12,460 INFO Building history features for 2019
+2026-06-16 22:43:17,678 INFO Building history features for 2020
+2026-06-16 22:43:23,223 INFO Building history features for 2021
+2026-06-16 22:43:28,488 INFO Building history features for 2022
+2026-06-16 22:43:33,586 INFO Building history features for 2023
+2026-06-16 22:43:38,726 INFO Building history features for 2024
+2026-06-16 22:43:43,812 INFO Building history features for 2025
+2026-06-16 22:43:50,369 INFO Building history features for 2026
+2026-06-16 22:43:53,286 INFO Done generating Phase 5 history features.
