@@ -727,15 +727,35 @@ def paired_bootstrap_vs_legacy(pred: pd.DataFrame, cfg: dict[str, Any], iteratio
             on=KEY_COLUMNS,
             suffixes=("_legacy", "_candidate"),
         )
-        race_ids = merged["race_id"].drop_duplicates().to_numpy()
-        race_groups = {rid: g for rid, g in merged.groupby("race_id")}
+        eps = float(cfg["epsilon"])
+        merged["legacy_logloss_sum"] = -(
+            merged["actual_place"] * np.log(clip_prob(merged["probability_raw_legacy"], eps))
+            + (1 - merged["actual_place"]) * np.log(1 - clip_prob(merged["probability_raw_legacy"], eps))
+        )
+        merged["candidate_logloss_sum"] = -(
+            merged["actual_place"] * np.log(clip_prob(merged["probability_raw_candidate"], eps))
+            + (1 - merged["actual_place"]) * np.log(1 - clip_prob(merged["probability_raw_candidate"], eps))
+        )
+        merged["legacy_brier_sum"] = np.square(merged["probability_raw_legacy"] - merged["actual_place"])
+        merged["candidate_brier_sum"] = np.square(merged["probability_raw_candidate"] - merged["actual_place"])
+        race_level = merged.groupby("race_id").agg(
+            legacy_logloss_sum=("legacy_logloss_sum", "sum"),
+            candidate_logloss_sum=("candidate_logloss_sum", "sum"),
+            legacy_brier_sum=("legacy_brier_sum", "sum"),
+            candidate_brier_sum=("candidate_brier_sum", "sum"),
+            count=("actual_place", "size"),
+        )
+        values = race_level[
+            ["legacy_logloss_sum", "candidate_logloss_sum", "legacy_brier_sum", "candidate_brier_sum", "count"]
+        ].to_numpy(float)
+        n_races = len(values)
         ll_diffs, br_diffs = [], []
         for _ in range(iterations):
-            sample = rng.choice(race_ids, size=len(race_ids), replace=True)
-            g = pd.concat([race_groups[rid] for rid in sample], ignore_index=True)
-            y = g["actual_place"].to_numpy(int)
-            ll_diffs.append(log_loss(y, g["probability_raw_candidate"], labels=[0, 1]) - log_loss(y, g["probability_raw_legacy"], labels=[0, 1]))
-            br_diffs.append(brier_score_loss(y, g["probability_raw_candidate"]) - brier_score_loss(y, g["probability_raw_legacy"]))
+            sample = rng.integers(0, n_races, size=n_races)
+            sampled = values[sample]
+            total_count = sampled[:, 4].sum()
+            ll_diffs.append((sampled[:, 1].sum() - sampled[:, 0].sum()) / total_count)
+            br_diffs.append((sampled[:, 3].sum() - sampled[:, 2].sum()) / total_count)
         ll = np.asarray(ll_diffs)
         br = np.asarray(br_diffs)
         rows.append({
@@ -829,13 +849,22 @@ def write_outputs(
     categorical: list[str],
     parity: pd.DataFrame | None,
     reference_mode: str,
+    resume: bool = False,
 ) -> None:
     out = Path(cfg["output_root"])
     out.mkdir(parents=True, exist_ok=True)
     pred_path = out / "phase5b_predictions.parquet"
     if pred_path.exists():
-        raise FileExistsError(f"Refusing to overwrite existing aggregate prediction file: {pred_path}")
-    pred.to_parquet(pred_path, index=False)
+        if not resume:
+            raise FileExistsError(f"Refusing to overwrite existing aggregate prediction file: {pred_path}")
+        existing = pd.read_parquet(pred_path, columns=KEY_COLUMNS + ["strategy"])
+        expected_keys = pred[KEY_COLUMNS + ["strategy"]].copy()
+        existing = normalize_parity_keys(existing).sort_values(KEY_COLUMNS + ["strategy"]).reset_index(drop=True)
+        expected_keys = normalize_parity_keys(expected_keys).sort_values(KEY_COLUMNS + ["strategy"]).reset_index(drop=True)
+        if len(existing) != len(expected_keys) or not existing.equals(expected_keys):
+            raise FileExistsError(f"Existing aggregate prediction file does not match resumed fold outputs: {pred_path}")
+    else:
+        pred.to_parquet(pred_path, index=False)
 
     summaries = summarize_predictions(pred, cfg)
     for name, df in summaries.items():
@@ -966,7 +995,7 @@ def run(
             parity.to_csv(out / "legacy_parity_check.csv", index=False)
             print(parity.to_string(index=False), flush=True)
             raise SystemExit(f"LEGACY {reference_mode} parity gate failed; stopping without broad strategy comparison.")
-    write_outputs(cfg, pred, fold_meta, numeric, categorical, parity, reference_mode)
+    write_outputs(cfg, pred, fold_meta, numeric, categorical, parity, reference_mode, resume)
     print(f"[done] elapsed_seconds={time.time() - started:.1f}", flush=True)
     return 0
 
