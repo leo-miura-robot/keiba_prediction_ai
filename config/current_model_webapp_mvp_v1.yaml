@@ -1,0 +1,29 @@
+app:
+  title: "競馬予想AI Current Model Dashboard"
+  default_strategy: "ROLLING_10Y"
+  default_tier: "CORE"
+  exclude_fixture_by_default: true
+
+data_sources:
+  prediction_parquet_globs:
+    - "outputs/place_market_offset_champion_challenger_phase5c_v1/predictions/ROLLING_10Y/*.parquet"
+    - "outputs/latest_model_validation_on_jrvltsql_20260608_official_10y_platt_v1/predictions.parquet"
+  phase6c_sqlite_paths:
+    - "outputs/place_market_offset_forward_paper_phase6c_v2/forward_paper.sqlite"
+    - "outputs/place_market_offset_forward_paper_phase6c_v2_fixture/forward_paper.sqlite"
+    - "outputs/place_market_offset_forward_paper_phase6c_v2_official_champion_fixture/forward_paper.sqlite"
+  output_inventory_path: "outputs/current_model_webapp_mvp_v1/data_source_inventory.json"
+
+betting:
+  stake_per_bet_yen: 100
+  official_place_target_column: "target_place_paid"
+  official_threshold: 1.0
+
+model_info:
+  champion: "ROLLING_10Y"
+  catboost_path: "models/place_market_offset_champion_challenger_phase5c_v1/ROLLING_10Y/validation_2026/model.cbm"
+  catboost_sha256: "4c6f1b9e236391bd84b9d75a14f7ea8ea3fe44761737bb645b8f21d74ed38256"
+  official_platt_path: "outputs/place_market_offset_official_calibrators_phase6a_v1/rolling_10y_platt_phase6a_v1.json"
+  official_platt_sha256: "ffee1efc19c38f3a76a1efa93488153429e8463bc65f693b331617274e208e98"
+  live_raw_prediction: "BLOCKED_MISSING_MARKET_PARAMETERS"
+  saved_prediction_visualization: "available"
