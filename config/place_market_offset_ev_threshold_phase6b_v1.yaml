@@ -1,0 +1,35 @@
+version: place_market_offset_ev_threshold_phase6b_v1
+
+phase6a_output_root: outputs/place_market_offset_safe_calibration_phase6a_v1
+phase6a_certification_root: outputs/place_market_offset_safe_calibration_phase6a_certification_v1
+output_root: outputs/place_market_offset_ev_threshold_phase6b_v1
+
+champion_strategy: ROLLING_10Y
+champion_calibration_method: PLATT_SCALING
+challenger_strategy: ROLLING_15Y
+challenger_calibration_method: ISOTONIC
+
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+threshold_min: 1.00
+threshold_max: 1.30
+threshold_step: 0.01
+stake_yen: 100
+odds_column: fuku_odds_low
+payout_column: fuku_pay
+probability_column: probability_calibrated
+ev_threshold_selection_primary: conservative
+bootstrap_iterations: 5000
+random_seed: 42
+operationally_activated: false
+
+eligibility:
+  combined_bet_count_min: 300
+  bet_years_min: 5
+  min_yearly_bet_count: 30
+  roi_ge_90_years_min: 3
+  combined_roi_min: 90.0
+  probability_roi_ge_90_min: 0.70
+  top3_payout_zeroed_roi_min: 70.0
+  top5_payout_zeroed_roi_min: 60.0
+  nested_validation_combined_roi_min: 85.0

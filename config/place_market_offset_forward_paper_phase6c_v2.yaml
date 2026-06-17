@@ -1,0 +1,47 @@
+version: place_market_offset_forward_paper_phase6c_v2
+output_root: outputs/place_market_offset_forward_paper_phase6c_v2
+
+champion:
+  strategy: ROLLING_10Y
+  calibration_method: PLATT_SCALING
+  calibration:
+    type: PLATT_SCALING
+    artifact_path: outputs/place_market_offset_official_calibrators_phase6a_v1/rolling_10y_platt_phase6a_v1.json
+    required_artifact_sha256: ffee1efc19c38f3a76a1efa93488153429e8463bc65f693b331617274e208e98
+    input_space: logit_probability_raw
+    fail_closed: true
+    allow_refit: false
+    allow_raw_fallback: false
+  model_artifact_path: models/place_market_offset_champion_challenger_phase5c_v1/ROLLING_10Y/validation_2026/model.cbm
+challenger:
+  strategy: ROLLING_15Y
+  calibration_method: BLOCKED_MISSING_ISOTONIC_THRESHOLDS
+  status: BLOCKED_MISSING_ISOTONIC_THRESHOLDS
+
+threshold_policy_version: phase6c_v2_fixed_4tier
+threshold_tiers:
+  - tier: CORE
+    threshold: 1.00
+    role: official_threshold_candidate
+  - tier: MARGIN
+    threshold: 1.05
+    role: shadow_diagnostic
+  - tier: HIGH
+    threshold: 1.10
+    role: shadow_diagnostic
+  - tier: VERY_HIGH
+    threshold: 1.15
+    role: shadow_diagnostic
+
+paper_trade_enabled: true
+real_money_betting: false
+real_money_activation_candidate: false
+operationally_activated: false
+paper_stake_yen: 100
+
+model_version: CORRECTED_LEGACY_2016_V1_ROLLING_10Y
+calibrator_version: phase6a_certified
+feature_hash: phase6a_certified_feature_hash
+model_hash: 4c6f1b9e236391bd84b9d75a14f7ea8ea3fe44761737bb645b8f21d74ed38256
+calibrator_hash: ffee1efc19c38f3a76a1efa93488153429e8463bc65f693b331617274e208e98
+ev_definition: probability_calibrated * fuku_odds_low

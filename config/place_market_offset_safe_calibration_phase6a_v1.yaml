@@ -1,0 +1,65 @@
+version: place_market_offset_safe_calibration_phase6a_v1
+
+history_dataset_path: data/derived/history_extension_2006_phase5_v1/history_features_2006_2026.parquet
+history_manifest_path: data/derived/history_extension_2006_phase5_v1/manifest.json
+legacy_base_predictions_path: outputs/place_market_offset_catboost_c1r0_feature_cleanup_v1/ablation_oof_predictions.parquet
+legacy_base_model_root: models/place_market_offset_catboost_c1r0_feature_cleanup_v1/drop_person_codes/folds
+feature_allowlist_path: outputs/place_market_offset_catboost_c1r0_v1/feature_allowlist_c1r0.json
+base_c1r0_config: config/place_market_offset_catboost_c1r0_v1.yaml
+
+phase5b_output_root: outputs/place_market_offset_year_strategy_phase5b_v2
+phase5c_output_root: outputs/place_market_offset_champion_challenger_phase5c_v1
+output_root: outputs/place_market_offset_safe_calibration_phase6a_v1
+model_root: models/place_market_offset_safe_calibration_phase6a_v1
+
+champion_strategy: ROLLING_10Y
+challenger_strategy: ROLLING_15Y
+calibration_methods: [RAW_IDENTITY, TEMPERATURE_SCALING, PLATT_SCALING, ISOTONIC]
+calibration_fit_start_year: 2016
+new_training_years: [2016, 2017, 2018, 2019]
+selection_years: [2020, 2021, 2022, 2023, 2024]
+diagnostic_years: [2025, 2026]
+
+target_column: target_place_paid
+eligible_column: eligible_for_place_training
+odds_column: fuku_odds_low
+payout_column: fuku_pay
+stake_yen: 100
+epsilon: 1.0e-6
+random_seed: 42
+bootstrap_iterations: 5000
+
+catboost:
+  iterations: 300
+  learning_rate: 0.05
+  depth: 8
+  l2_leaf_reg: 5.0
+  random_strength: 1.0
+  bootstrap_type: Bayesian
+  bagging_temperature: 1.0
+  loss_function: Logloss
+  eval_metric: Logloss
+  random_seed: 42
+  task_type: GPU
+  devices: "0"
+  allow_writing_files: false
+  verbose: 100
+  use_best_model: false
+
+feature_drops:
+  - KisyuCode
+  - ChokyosiCode
+
+strategies:
+  - name: ROLLING_10Y
+    role: champion
+    mode: rolling
+    history_start_year: 2006
+    model_train_start_year: 2006
+    rolling_years: 10
+  - name: ROLLING_15Y
+    role: challenger
+    mode: rolling
+    history_start_year: 2006
+    model_train_start_year: 2006
+    rolling_years: 15
